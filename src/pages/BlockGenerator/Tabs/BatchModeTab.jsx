@@ -2,7 +2,7 @@ import React from "react";
 import Button from "../../../components/Button/Button";
 import DropZone from "../../../components/DropZone/DropZone";
 import TextArea from "../../../components/FormControls/TextArea";
-import Select from "../../../components/FormControls/Select";
+import Select from "@/components/FormControls/Select";
 import FieldWrapper from "../../../components/FormControls/FieldWrapper";
 
 const BatchModeTab = () => {

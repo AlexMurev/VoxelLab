@@ -1,7 +1,7 @@
 import "./App.css";
-import BlockGenerator from "./pages/BlockGenerator/BlockGenerator";
+import BlockGenerator from "@/pages/BlockGenerator/BlockGenerator";
 import Header from "@/components/Header/Header";
-import Footer from "./components/Footer/Footer";
+import Footer from "@/components/Footer/Footer";
 
 function App() {
     return (
