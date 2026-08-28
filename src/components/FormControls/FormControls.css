@@ -1,0 +1,103 @@
+.field-wrapper {
+    margin-bottom: 1.8rem;
+}
+
+.field-wrapper__label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+}
+
+.field-wrapper__content {
+    position: relative;
+    width: 100%;
+}
+
+.field-wrapper__error {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-error, var(--text-error));
+    font-weight: 500;
+}
+
+.form-field__textarea,
+.form-field__input,
+.form-field__select {
+    width: 100%;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 0.9rem 1.1rem;
+    border-radius: 8px;
+    outline: none;
+    font-size: 0.95rem;
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+
+.form-field__textarea:focus,
+.form-field__input:focus,
+.form-field__select:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.form-field__textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: monospace;
+    line-height: 1.4;
+    scrollbar-color: var(--border-color) var(--bg-input);
+}
+
+/* Кастомизация Селекта */
+
+.form-field__select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.form-field__select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 2.8rem; 
+    cursor: pointer;
+}
+
+.form-field__select-wrapper::after {
+    content: "";
+    position: absolute;
+    right: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg); 
+    width: 1.25rem;
+    height: 1.25rem;
+    
+    -webkit-mask-image: url('../../../public/dropdown-arrow.svg'); 
+    mask-image: url('../../../public/dropdown-arrow.svg');
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    
+    background-color: var(--text-muted); 
+    
+    pointer-events: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Эффекты при наведении */
+.form-field__select-wrapper:hover::after {
+    background-color: var(--accent-primary);
+}
+
+/* Стилизация выпадающих опций */
+.form-field__select option {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+}
