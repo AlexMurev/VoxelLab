@@ -21,14 +21,14 @@ const BlockGenerator = () => {
 
     const [activeTab, setActiveTab] = useState<string>("single");
 
-    const [formData, setFormData] = useState<BlockGeneratorFormData>({ 
+    const [formData, setFormData] = useState<BlockGeneratorFormData>({
         blockType: "stairs",
         textureNames: [],
         packId: "justblocks",
         materialId: "",
-        durability: 0
+        durability: 0,
     });
-    
+
     const { isGenerating, downloadArchive } = useJsonExporter();
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -45,17 +45,25 @@ const BlockGenerator = () => {
         setFormData((prev) => ({ ...prev, [name]: textureNames }));
     };
 
+    const handleDropZoneFiles = (fileNames: string[]) => {
+        setFormData((prev) => {
+            // Объединяем старые имена текстур и новые, исключая дубликаты через Set
+            const uniqueNames = Array.from(new Set([...prev.textureNames, ...fileNames]));
+            return { ...prev, textureNames: uniqueNames };
+        });
+    };
+
     const handleSubmit = (e: SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    const submitter = e.nativeEvent.submitter as HTMLButtonElement | null;
-    const action = submitter?.value || "only_json";
+        const submitter = e.nativeEvent.submitter as HTMLButtonElement | null;
+        const action = submitter?.value || "only_json";
 
-    if (!isGenerating) {
-        console.log("start downloading", formData.blockType);
-        downloadArchive(formData, action);
-    }
-};
+        if (!isGenerating) {
+            console.log("start downloading", formData.blockType);
+            downloadArchive(formData, action);
+        }
+    };
 
     return (
         <div className="block-generator">
@@ -88,13 +96,14 @@ const BlockGenerator = () => {
                     ) : (
                         <>
                             <FieldWrapper title="Список текстур">
-                                <DropZone />
+                                <DropZone onFilesSelect={handleDropZoneFiles} />
                             </FieldWrapper>
                             <TextArea
                                 name="textureNames"
                                 placeholder={
                                     "Или введите названия вручную (по одному на строку):\nwhite_wool\nyellow_wool"
                                 }
+                                value={formData.textureNames.join("\n")}
                                 onChange={handleTextureNamesChange}
                             />
                         </>

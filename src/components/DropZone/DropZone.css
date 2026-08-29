@@ -8,6 +8,7 @@
     transition: var(--transition);
 }
 
+.drop-zone--active,
 .drop-zone:hover {
     border-color: var(--accent-primary);
     background-color: rgba(37, 99, 235, 0.04);
