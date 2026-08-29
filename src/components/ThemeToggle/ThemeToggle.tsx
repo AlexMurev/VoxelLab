@@ -3,7 +3,7 @@ import { useTheme } from "../../hooks/useTheme";
 import "./ThemeToggle.css";
 
 interface ThemeToggleProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-    className?: string;
+    className?: string; 
 }
 
 const ThemeToggle = ({className}: ThemeToggleProps) => {
