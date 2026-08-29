@@ -1,8 +1,12 @@
-import React from "react";
+import type { ButtonHTMLAttributes } from "react";
 import { useTheme } from "../../hooks/useTheme";
 import "./ThemeToggle.css";
 
-const ThemeToggle = ({className}) => {
+interface ThemeToggleProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+    className?: string;
+}
+
+const ThemeToggle = ({className}: ThemeToggleProps) => {
     const { theme, toggleTheme } = useTheme();
 
     return (

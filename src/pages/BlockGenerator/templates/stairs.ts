@@ -1,4 +1,5 @@
-const stairsTemplate = {
+import { type BlockProperties } from "@/types/blockProperties";
+const stairsTemplate :BlockProperties = {
     parent: "justblocks:base_stairs",
     "picking-item": "PACKID:BLOCK_stairs.item",
     hidden: false,
@@ -18,7 +19,7 @@ const stairsTemplate = {
     },
 };
 
-const innerCornerTemplate = {
+const innerCornerTemplate :BlockProperties = {
     parent: "justblocks:BLOCK_stairs",
     "model-name": "stairs/stairs_inner_corner_0",
     "justblocks:solid-faces": [true, false, true, false, true, false],
@@ -42,7 +43,7 @@ const innerCornerTemplate = {
     },
 };
 
-const outerCornerTemplate = {
+const outerCornerTemplate :BlockProperties = {
     parent: "justblocks:BLOCK_stairs",
     "model-name": "stairs/stairs_outer_corner_0",
     "justblocks:solid-faces": [false, false, true, false, false, false],
@@ -65,10 +66,10 @@ const outerCornerTemplate = {
     },
 };
 
-export const generateStairs = (packId = "justblocks", textureName = "oak_planks", material, durability) => {
-    const stairs = structuredClone(stairsTemplate);
-    const inner = structuredClone(innerCornerTemplate);
-    const outer = structuredClone(outerCornerTemplate);
+export const generateStairs = (packId :string = "justblocks", textureName: string = "oak_planks", material?: string, durability?: string | number) => {
+    const stairs = structuredClone(stairsTemplate) as BlockProperties;
+    const inner = structuredClone(innerCornerTemplate) as BlockProperties;
+    const outer = structuredClone(outerCornerTemplate) as BlockProperties;
 
     stairs["picking-item"] = `${packId}:${textureName}_stairs.item`;
     stairs.caption = textureName.replaceAll("_", " ");

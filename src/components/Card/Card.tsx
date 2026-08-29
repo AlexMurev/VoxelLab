@@ -1,9 +1,23 @@
-import React from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 import "./Card.css";
 
-const Card = ({ children, title, tabs = [], activeTabId, onTabChange}) => {
+interface CardTab {
+    id: string,
+    title: string
+}
+
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
+    children: ReactNode,
+    variant?: "primary" | "secondary";
+    title?: string,
+    tabs?: CardTab[],
+    activeTabId: string,
+    onTabChange: (id: string) => void
+}
+
+const Card = ({ children, title, tabs = [], activeTabId, onTabChange, ...props}: CardProps) => {
     return (
-        <div className="card">
+        <div className="card" {...props}>
             <div className="card__header">
                 <div className="card__title">{title}</div>
 
@@ -14,7 +28,7 @@ const Card = ({ children, title, tabs = [], activeTabId, onTabChange}) => {
                                 key={tab.id}
                                 className={`card__tab-btn ${activeTabId === tab.id ? "card__tab-btn--active" : ""}`}
                                 onClick={() => onTabChange(tab.id)}>
-                                {tab.label}
+                                {tab.title}
                             </button>
                         ))}
                     </div>

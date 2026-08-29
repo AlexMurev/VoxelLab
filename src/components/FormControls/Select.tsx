@@ -1,8 +1,13 @@
-import React from "react";
+import type { SelectHTMLAttributes, ReactNode } from "react";
 import "./FormControls.css";
 import FieldWrapper from "./FieldWrapper";
 
-const Select = ({ title, children, ...props }) => (
+interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+    children?: ReactNode,
+    title?: string
+}
+
+const Select = ({ title, children, ...props }: SelectProps) => (
     <FieldWrapper title={title}>
         <div className="form-field__select-wrapper">
             <select className="form-field__select" {...props}>

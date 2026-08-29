@@ -1,7 +1,13 @@
-import React from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 import "./FormControls.css";
 
-const FieldWrapper = ({ title, error, children }) => {
+interface FieldWrapperProps extends HTMLAttributes<HTMLDivElement> {
+    children?: ReactNode,
+    title?: string,
+    error?: string
+}
+
+const FieldWrapper = ({ title, error, children }: FieldWrapperProps) => {
     return (
         <div className="field-wrapper">
             {title && <label className="field-wrapper__label">{title}</label>}
