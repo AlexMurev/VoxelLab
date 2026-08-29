@@ -1,6 +1,7 @@
 import Logo from "./Logo/Logo";
 import "./Header.css";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import { Link } from "react-router-dom";
 
 const Header = () => {
     return (
@@ -10,14 +11,14 @@ const Header = () => {
             <nav className="header__nav">
                 <ul className="header__menu">
                     <li className="header__menu-item">
-                        <a href="/#" className="header__link header__link--active">
+                        <Link to="/" className="header__link header__link--active">
                             Генератор блоков
-                        </a>
+                        </Link>
                     </li>
                     <li className="header__menu-item">
-                        <a href="/#" className="header__link">
+                        <Link to="/vcm-editor" className="header__link">
                             Модели vcm
-                        </a>
+                        </Link>
                     </li>
                     <li className="header__menu-item">
                         <a href="/#" className="header__link">
