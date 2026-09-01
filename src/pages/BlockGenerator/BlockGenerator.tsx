@@ -76,8 +76,9 @@ const BlockGenerator = () => {
                 <form className="block-generator__form" onSubmit={handleSubmit}>
                     <Select title={"Шаблон блока"} name="blockType" value={formData.blockType} onChange={handleChange}>
                         <option value="stairs">Ступеньки</option>
+                        <option value="slab">Полублок</option>
+                        <option value="door">Дверь</option>
                         <option value="fence">Забор</option>
-                        <option value="slab">Плита</option>
                     </Select>
 
                     <Input name="packId" title={"ID вашего пака"} placeholder={"justblocks"} onChange={handleChange} />

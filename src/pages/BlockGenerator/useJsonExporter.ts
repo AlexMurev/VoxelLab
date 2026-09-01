@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { generateStairs } from "./templates/stairs";
+import { generateSlab } from "./templates/slab";
+import { generateDoor } from "./templates/door";
 import { generateArchive, saveBlobAsFile, type ExportFile } from "@/utils/fileExporter";
 import { type BlockGeneratorFormData, type TemplateStrategy } from "./types";
 
 const TEMPLATE_MAP: Record<string, TemplateStrategy> = {
     stairs: generateStairs,
+    slab: generateSlab,
+    door: generateDoor,
 };
 
 export const useJsonExporter = () => {
