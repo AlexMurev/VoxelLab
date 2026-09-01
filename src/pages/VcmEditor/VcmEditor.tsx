@@ -3,7 +3,7 @@ import "./VcmEditor.css";
 const VcmEditor = () => {
 
     return (
-        <div>VcmEditor</div>
+        <div style={{margin: "auto"}}>VcmEditor</div>
     );
 };
 

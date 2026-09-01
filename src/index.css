@@ -92,3 +92,7 @@ body {
         -1px -1px,
         -1px -1px;
 }
+
+html {
+    overflow-y: scroll;
+}

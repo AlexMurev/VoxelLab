@@ -1,30 +1,29 @@
 import Logo from "./Logo/Logo";
 import "./Header.css";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
-import { Link } from "react-router-dom";
+import { NavLink, type NavLinkRenderProps } from "react-router-dom";
+
+const NAV_LINKS = [
+    { to: "/", label: "Генератор блоков" },
+    { to: "/vcm-editor", label: "Модели vcm" },
+    { to: "/chge", label: "Coming soon" },
+];
 
 const Header = () => {
+    const getLinkClass = ({ isActive }: NavLinkRenderProps) => `header__link ${isActive ? "header__link--active" : ""}`.trim();
     return (
         <header className="header">
             <Logo />
 
             <nav className="header__nav">
                 <ul className="header__menu">
-                    <li className="header__menu-item">
-                        <Link to="/" className="header__link header__link--active">
-                            Генератор блоков
-                        </Link>
-                    </li>
-                    <li className="header__menu-item">
-                        <Link to="/vcm-editor" className="header__link">
-                            Модели vcm
-                        </Link>
-                    </li>
-                    <li className="header__menu-item">
-                        <a href="/#" className="header__link">
-                            Coming soon
-                        </a>
-                    </li>
+                    {NAV_LINKS.map((link) => (
+                        <li key={link.to} className="header__menu-item">
+                            <NavLink to={link.to} className={getLinkClass}>
+                                {link.label}
+                            </NavLink>
+                        </li>
+                    ))}
                 </ul>
             </nav>
 
