@@ -1,64 +1,53 @@
-/* Панель на всю ширину, прижатая к самому верху враппера */
-.vcm-editor__toolbar {
-    position: absolute;
+.toolsbar {
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 10; /* Поверх Canvas */
     display: flex;
-    justify-content: flex-start; /* Кнопки теперь СЛЕВА */
-    gap: 4px; /* Меньше зазор между кнопками */
-    background-color: var(--bg-header); 
-    padding: 4px 8px; /* Уменьшили высоту за счет padding сверху/снизу */
+    justify-content: flex-start; 
+    gap: 4px; 
+    background-color: var(--bg-editor-panels); 
+    padding: 4px 8px;
     border-bottom: 1px solid var(--border-color); 
-    border-radius: 0; 
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(8px);
     transition: background-color var(--transition), border-color var(--transition);
 }
 
-/* Компактные квадратные кнопки */
-.vcm-editor__toolbar-btn {
+.toolsbar__btn {
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: transparent;
     border: 1px solid transparent;
     padding: 0;
-    width: 32px;  /* Уменьшили размер */
-    height: 32px; /* Уменьшили размер */
+    width: 32px;
+    height: 32px;
     cursor: pointer;
-    border-radius: calc(var(--radius) - 6px); /* Адаптировали скругление */
+    border-radius: calc(var(--radius) - 6px);
     transition: var(--transition);
 }
 
-/* Hover-эффект */
-.vcm-editor__toolbar-btn:hover {
+.toolsbar__btn:hover {
     background-color: var(--bg-hover-subtle);
 }
 
-/* Стили для иконки внутри кнопки */
-.vcm-editor__toolbar-btn .btn-icon {
-    width: 16px;  /* Чуть меньше иконка для компактности */
+.toolsbar__icon {
+    width: 16px;  
     height: 16px;
     display: block;
     filter: brightness(0) invert(0.6); 
     transition: var(--transition);
 }
 
-/* Эффект при наведении на иконку */
-.vcm-editor__toolbar-btn:hover .btn-icon {
+.toolsbar__btn:hover .toolsbar__icon {
     filter: brightness(0) invert(1); 
 }
 
-/* Активный выбранный мод */
-.vcm-editor__toolbar-btn.active {
+/* Модификатор активного состояния */
+.toolsbar__btn--active {
     background-color: var(--accent-primary);
     border-color: var(--border-highlight);
     box-shadow: 0 0 8px var(--accent-glow);
 }
 
-/* Иконка внутри активной кнопки */
-.vcm-editor__toolbar-btn.active .btn-icon {
+.toolsbar__btn--active .toolsbar__icon {
     filter: brightness(0) invert(1) !important;
 }

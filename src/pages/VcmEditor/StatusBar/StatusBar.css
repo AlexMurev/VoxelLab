@@ -1,21 +1,15 @@
 .status-bar {
-    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 36px;
+    height: 26px;
     
     display: flex;
     align-items: center;
     gap: 20px;
     padding: 0 16px;
     
-    background-color: var(--bg-footer);
-    backdrop-filter: blur(8px);
-    border-top: 1px solid var(--border-color);
-    
-    pointer-events: none; 
-    z-index: 10;
+    background-color: var(--bg-editor-panels);
 }
 
 .status-bar__item {
@@ -23,7 +17,7 @@
     align-items: center;
     gap: 6px;
     font-family: "Inter", sans-serif;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 500;
 }
 

@@ -10,6 +10,8 @@ import FpsTracker from "@/utils/FpsTracker";
 import Editor2DText from "./Objects/Editor2DText";
 import Box from "./Objects/Box";
 import StatusBar from "./StatusBar/StatusBar";
+import Sidebar from "./Sidebar/Sidebar";
+import { Panel, Group, Separator} from "react-resizable-panels";
 
 export interface SceneObject {
     id: string;
@@ -33,9 +35,7 @@ export interface EditorStore {
 }
 
 const useEditorStore = create<EditorStore>((set) => ({
-    objects: [
-       
-    ],
+    objects: [],
     selectedId: null,
     addObject: (obj) =>
         set((state) => {
@@ -62,6 +62,7 @@ const VcmEditor = () => {
     const [selectedMesh, setSelectedMesh] = useState<THREE.Object3D | null>(null);
     const [transformMode, setTransformMode] = useState<TransformMode>("translate");
     const [targetPosition, setTargetPosition] = useState<[number, number, number]>([0, 0, 0]);
+    const [isDraggingBar, setIsDraggingBar] = useState(false);
 
     const [dragStartTransform, setDragStartTransform] = useState<{
         position: [number, number, number];
@@ -73,7 +74,6 @@ const VcmEditor = () => {
     const colorPhantomEdges = useCssVariable("--accent-primary", "#0000ff");
 
     const [fps, setFps] = useState(0);
-
     const [activeTranslateSnap, setActiveTranslateSnap] = useState<number>(1);
 
     useEffect(() => {
@@ -123,103 +123,118 @@ const VcmEditor = () => {
     };
 
     return (
-        <div className="vcm-editor__wrapper">
-            <div className="vcm-editor__canvas">
-                <Toolbar
-                    currentMode={transformMode}
-                    onChange={setTransformMode}
-                    centerCameraToOrigin={setTargetPosition}
-                    addObject={addObject}
-                />
-                <Canvas camera={{ position: [8, 8, 16] }} onPointerMissed={handleCanvasMissed}>
-                    <GizmoHelper alignment="top-right" margin={[100, 100]}>
-                        <GizmoViewport />
-                    </GizmoHelper>
-                    <axesHelper args={[16]} position={[-8, -0.999, -8]} />
-                    <gridHelper args={[16, 16, colorGrid, colorGrid]} position={[0, -1, 0]} />
-                    <gridHelper args={[48, 3, colorGrid, colorGrid]} position={[0, -1, 0]} />
-                    <OrbitControls
-                        enableDamping={false}
-                        makeDefault
-                        enableZoom={true}
-                        enablePan={true}
-                        enableRotate={true}
-                        minAzimuthAngle={-Infinity}
-                        maxAzimuthAngle={Infinity}
-                        minPolarAngle={0}
-                        maxDistance={240}
-                        minDistance={0.01}
-                        maxPolarAngle={Math.PI}
-                        target={targetPosition}
-                    />
+        <div className="vcm-editor">
+            <Toolbar
+                currentMode={transformMode}
+                onChange={setTransformMode}
+                centerCameraToOrigin={setTargetPosition}
+                addObject={addObject}
+                className="vcm-editor__tools"
+            />
+            <Group
+                orientation="horizontal"
+                className="vcm-editor__main"
+                onLayoutChange={() => setIsDraggingBar(true)}
+                onLayoutChanged={() => setIsDraggingBar(false)}>
+                <Panel minSize={50}>
+                    <div className="vcm-editor__canvas">
+                        <Canvas camera={{ position: [8, 8, 16] }} onPointerMissed={handleCanvasMissed}>
+                            <GizmoHelper alignment="top-right" margin={[65, 65]}>
+                                <GizmoViewport scale={30} />
+                            </GizmoHelper>
+                            <axesHelper args={[16]} position={[-8, -0.999, -8]} />
+                            <gridHelper args={[16, 16, colorGrid, colorGrid]} position={[0, -1, 0]} />
+                            <gridHelper args={[48, 3, colorGrid, colorGrid]} position={[0, -1, 0]} />
+                            <OrbitControls
+                                enabled={!isDraggingBar}
+                                enableDamping={false}
+                                makeDefault
+                                enableZoom={true}
+                                enablePan={true}
+                                enableRotate={true}
+                                minAzimuthAngle={-Infinity}
+                                maxAzimuthAngle={Infinity}
+                                minPolarAngle={0}
+                                maxDistance={240}
+                                minDistance={0.01}
+                                maxPolarAngle={Math.PI}
+                                target={targetPosition}
+                            />
 
-                    {dragStartTransform && (
-                        <mesh
-                            position={dragStartTransform.position}
-                            rotation={dragStartTransform.rotation}
-                            scale={dragStartTransform.scale}>
-                            <boxGeometry args={[1, 1, 1]} />
-                            <meshBasicMaterial visible={false} />
-                            <Edges toneMapped={false} color={colorPhantomEdges} linewidth={2} threshold={1} />
-                        </mesh>
-                    )}
+                            {dragStartTransform && (
+                                <mesh
+                                    position={dragStartTransform.position}
+                                    rotation={dragStartTransform.rotation}
+                                    scale={dragStartTransform.scale}>
+                                    <boxGeometry args={[1, 1, 1]} />
+                                    <meshBasicMaterial visible={false} />
+                                    <Edges toneMapped={false} color={colorPhantomEdges} linewidth={2} threshold={1} />
+                                </mesh>
+                            )}
 
-                    {objects.map((obj) => (
-                        <Box
-                            key={obj.id}
-                            position={obj.position}
-                            rotation={obj.rotation}
-                            scale={obj.scale}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                selectObject(obj.id);
-                                setSelectedMesh(e.object);
-                            }}
-                            onDoubleClick={(e) => {
-                                e.stopPropagation();
-                                setTargetPosition(obj.position);
-                            }}
-                        />
-                    ))}
+                            {objects.map((obj) => (
+                                <Box
+                                    key={obj.id}
+                                    position={obj.position}
+                                    rotation={obj.rotation}
+                                    scale={obj.scale}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        selectObject(obj.id);
+                                        setSelectedMesh(e.object);
+                                    }}
+                                    onDoubleClick={(e) => {
+                                        e.stopPropagation();
+                                        setTargetPosition(obj.position);
+                                    }}
+                                />
+                            ))}
 
-                    {selectedMesh && (
-                        <TransformControls
-                            object={selectedMesh}
-                            mode={transformMode}
-                            translationSnap={activeTranslateSnap}
-                            scaleSnap={activeTranslateSnap}
-                            rotationSnap={22.5 * (Math.PI / 180)}
-                            onObjectChange={handleTransform}
-                            onMouseDown={() => {
-                                if (selectedMesh) {
-                                    setDragStartTransform({
-                                        position: selectedMesh.position.toArray() as [number, number, number],
-                                        rotation: [
-                                            selectedMesh.rotation.x,
-                                            selectedMesh.rotation.y,
-                                            selectedMesh.rotation.z,
-                                        ],
-                                        scale: selectedMesh.scale.toArray() as [number, number, number],
-                                    });
-                                }
-                            }}
-                            onMouseUp={() => {
-                                setDragStartTransform(null);
-                            }}
-                        />
-                    )}
+                            {selectedMesh && (
+                                <TransformControls
+                                    object={selectedMesh}
+                                    mode={transformMode}
+                                    translationSnap={activeTranslateSnap}
+                                    scaleSnap={activeTranslateSnap}
+                                    rotationSnap={22.5 * (Math.PI / 180)}
+                                    onObjectChange={handleTransform}
+                                    onMouseDown={() => {
+                                        if (selectedMesh) {
+                                            setDragStartTransform({
+                                                position: selectedMesh.position.toArray() as [number, number, number],
+                                                rotation: [
+                                                    selectedMesh.rotation.x,
+                                                    selectedMesh.rotation.y,
+                                                    selectedMesh.rotation.z,
+                                                ],
+                                                scale: selectedMesh.scale.toArray() as [number, number, number],
+                                            });
+                                        }
+                                    }}
+                                    onMouseUp={() => {
+                                        setDragStartTransform(null);
+                                    }}
+                                />
+                            )}
 
-                    <Editor2DText color={colorGrid} />
-                    <FpsTracker onFpsUpdate={setFps} />
-                </Canvas>
-                <StatusBar
-                    items={[
-                        ["FPS:", fps.toString()],
-                        ["MODE:", transformMode.toUpperCase()],
-                        ["OBJECT:", selectedId?.toString()],
-                    ]}
-                />
-            </div>
+                            <Editor2DText color={colorGrid} />
+                            <FpsTracker onFpsUpdate={setFps} />
+                        </Canvas>
+                    </div>
+                </Panel>
+                <Separator className="vcm-editor__separator" />
+                <Panel defaultSize={330} minSize={130} maxSize="50%">
+                    <Sidebar />
+                </Panel>
+            </Group>
+            <StatusBar
+                items={[
+                    ["FPS:", fps.toString()],
+                    ["MODE:", transformMode.toUpperCase()],
+                    ["OBJECT:", selectedId?.toString()],
+                ]}
+                className="vcm-editor__status"
+            />
         </div>
     );
 };

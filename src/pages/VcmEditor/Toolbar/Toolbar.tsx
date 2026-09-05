@@ -14,9 +14,10 @@ interface ToolbarProps {
     onChange: (mode: TransformMode) => void;
     centerCameraToOrigin: (position: [number, number, number]) => void;
     addObject: (obj: Omit<SceneObject, "id">) => void;
+    className?: string;
 }
 
-export const Toolbar = ({ currentMode, onChange, centerCameraToOrigin, addObject }: ToolbarProps) => {
+export const Toolbar = ({ currentMode, onChange, centerCameraToOrigin, addObject, className }: ToolbarProps) => {
     const buttons: { mode: TransformMode; label: string; icon: string }[] = [
         { mode: "translate", label: "Перемещение", icon: TranslateIcon },
         { mode: "rotate", label: "Вращение", icon: RotateIcon },
@@ -24,33 +25,33 @@ export const Toolbar = ({ currentMode, onChange, centerCameraToOrigin, addObject
     ];
 
     return (
-        <div className="vcm-editor__toolbar">
+        <div className={`toolsbar ${className || ""}`}>
             {buttons.map((btn) => {
                 const isActive = currentMode === btn.mode;
                 return (
                     <button
                         key={btn.mode}
-                        className={`vcm-editor__toolbar-btn ${isActive ? "active" : ""}`}
+                        className={`toolsbar__btn ${isActive ? "toolsbar__btn--active" : ""}`}
                         onClick={() => onChange(btn.mode)}
                         title={btn.label}
                         type="button">
-                        <img src={btn.icon} alt={btn.label} className="btn-icon" />
+                        <img src={btn.icon} alt={btn.label} className="toolsbar__icon" />
                     </button>
                 );
             })}
             <button
-                className={`vcm-editor__toolbar-btn`}
+                className="toolsbar__btn"
                 onClick={() => centerCameraToOrigin([0, 0, 0])}
-                title={"Центрировать камеру"}
+                title="Центрировать камеру"
                 type="button">
-                <img src={CenterIcon} alt={"Центрировать камеру"} className="btn-icon" />
+                <img src={CenterIcon} alt="Центрировать камеру" className="toolsbar__icon" />
             </button>
             <button
-                className={`vcm-editor__toolbar-btn`}
-                onClick={() => addObject({type: "box", position: [0, 0, 0], scale: [2, 2, 2], rotation: [0, 0, 0]})}
-                title={"Добавить куб"}
+                className="toolsbar__btn"
+                onClick={() => addObject({ type: "box", position: [0, 0, 0], scale: [2, 2, 2], rotation: [0, 0, 0] })}
+                title="Добавить куб"
                 type="button">
-                <img src={AddIcon} alt={"Добавить куб"} className="btn-icon" />
+                <img src={AddIcon} alt="Добавить куб" className="toolsbar__icon" />
             </button>
         </div>
     );

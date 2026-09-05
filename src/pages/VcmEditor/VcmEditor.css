@@ -1,18 +1,54 @@
-.vcm-editor__canvas {
-    background: var(--bg-main);
-    width: 100vw;
-    height: 100vh;
-    display: block;
-}
-
-.vcm-editor__wrapper {
-    position: relative;
+.vcm-editor {
+    display: grid;
     width: 100%;
     height: 100%;
-    min-height: 500px; 
-    background-color: var(--bg-input);
-    border: 1px solid var(--border-color);
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas: 
+        "tools"
+        "main"
+        "status";
+}
+
+.vcm-editor__canvas {
+    background: var(--bg-main);
+    width: 100%;
+    height: 100%;
+    min-width: 0; 
+    min-height: 0;
+    position: relative;
+}
+
+.vcm-editor__main {
+    grid-area: main;
+}
+
+.vcm-editor__tools {
+    grid-area: tools;
+}
+
+.vcm-editor__status {
+    grid-area: status;
+}
+
+.vcm-editor__separator {
+    width: 5px;
+    height: 100%;
+    background-color: rgb(from var(--border-color) r g b / 0.4); 
+    cursor: col-resize;
+    z-index: 10;
     border-radius: var(--radius);
-    overflow: hidden;
-    transition: border-color var(--transition), background-color var(--transition);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* При наведении — мягкое проявление цвета */
+.vcm-editor__separator:hover {
+    background-color: rgb(from var(--border-highlight) r g b / 0.4);
+}
+
+/* При удержании и перетаскивании — аккуратный акцент без выжигающего свечения */
+.vcm-editor__separator:active {
+    background-color: var(--accent-primary);
+    /* Очень тонкое, едва заметное свечение */
+    box-shadow: 0 0 6px rgb(from var(--accent-glow) r g b / 0.0001);
 }

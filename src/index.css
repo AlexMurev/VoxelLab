@@ -2,14 +2,14 @@
     --radius: 12px;
     --transition: all 0.2s ease;
 
-    /* По умолчанию включается тёмная тема */
     --bg-main: #0b0f19;
+    --bg-editor-panels: #0f1624;
     --bg-card: #141d2e;
     --bg-card-hover: #1b273e;
     --bg-input: #0a0e17;
-    --bg-header: #141d2ed9;          /* 85% opacity */
-    --bg-footer: #0b0f19cc;          /* 80% opacity */
-    --bg-hover-subtle: #ffffff0a;    /* 4% opacity */
+    --bg-header: #141d2ed9;
+    --bg-footer: #0b0f19cc;
+    --bg-hover-subtle: #ffffff0a;
 
     --border-color: #212d45;
     --border-highlight: #3b82f6;
@@ -20,42 +20,41 @@
 
     --accent-primary: #2563eb;
     --accent-primary-hover: #1d4ed8;
-    --accent-soft: #2563eb29;         /* 16% opacity */
-    --accent-glow: #38bdf838;         /* 22% opacity */
+    --accent-soft: #2563eb29;
+    --accent-glow: #38bdf838;
     --accent-cyan: #38bdf8;
-    --accent-cyan-glow: #38bdf81a;    /* 10% opacity */
-    
-    /* Переменная для прозрачности фоновой сетки */
-    --grid-color: #ffffff05;          /* 2% opacity */
-    --gradient-glow: #2563eb1e;       /* 12% opacity */
+    --accent-cyan-glow: #38bdf81a;
+
+    --grid-color: #ffffff05;
+    --gradient-glow: #2563eb1e;
 }
 
-/* Переработанная светлая палитра (без выжигающего белого) */
 [data-theme="light"] {
-    --bg-main: #e2e8f0;              /* Slate 200 — более глубокий и мягкий основной фон */
-    --bg-card: #f1f5f9;              /* Slate 100 — карточки выделяются над фоном */
-    --bg-card-hover: #ffffff;        /* При наведении карточка слегка "подсвечивается" чистым белым */
-    --bg-input: #e2e8f0;             /* Вдавленные поля ввода */
-    --bg-header: #f1f5f9d9;          /* 85% opacity */
-    --bg-footer: #e2e8f0cc;          /* 80% opacity */
-    --bg-hover-subtle: #0f172a0d;    /* 5% opacity */
+    --bg-main: #eef2f7;
+    --bg-editor-panels: #c8d2df;
+    --bg-header: #c8d2dfd9;
+    --bg-footer: #c8d2dfcc;
+    --bg-input: #dce4ed;
+    --bg-card: #c8d2df;
+    --bg-card-hover: #bcc8d6;
+    --bg-hover-subtle: #1e293b0a;
 
-    --border-color: #cbd5e1;         /* Slate 300 — четкие, но мягкие границы */
+    --border-color: #b0bccb;
     --border-highlight: #2563eb;
 
-    --text-main: #0f172a;           /* Slate 900 */
-    --text-muted: #475569;          /* Slate 600 — повышенный контраст для читаемости */
-    --text-error: #dc2626;
+    --text-main: #1e293b;
+    --text-muted: #475569;
+    --text-error: #b91c1c;
 
     --accent-primary: #2563eb;
     --accent-primary-hover: #1d4ed8;
-    --accent-soft: #2563eb14;        /* 8% opacity */
-    --accent-glow: #2563eb1e;        /* 12% opacity */
+    --accent-soft: #2563eb14;
+    --accent-glow: #2563eb1e;
     --accent-cyan: #0284c7;
-    --accent-cyan-glow: #0284c71f;   /* 12% opacity */
-
-    --grid-color: #0f172a0d;         /* 5% opacity dark grid */
-    --gradient-glow: #2563eb14;      /* 8% opacity */
+    --accent-cyan-glow: #0284c71f;
+    
+    --grid-color: #1e293b0a;
+    --gradient-glow: #2563eb10;
 }
 
 * {
@@ -78,7 +77,6 @@ body {
     flex-direction: column;
     font-size: 16px;
     transition: background-color var(--transition), color var(--transition);
-
     background-image:
         radial-gradient(circle at 50% 0%, var(--gradient-glow), transparent 50%),
         linear-gradient(var(--grid-color) 1px, transparent 1px),
