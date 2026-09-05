@@ -40,12 +40,12 @@ const Box = forwardRef<THREE.Mesh, BoxProps>((props, ref) => {
             onClick={props.onClick}
             onDoubleClick={props.onDoubleClick}>
             <boxGeometry args={[1, 1, 1]}/>
-            <meshStandardMaterial attach="material-0" map={textures.west} roughness={1} />
-            <meshStandardMaterial attach="material-1" map={textures.east} roughness={1} />
-            <meshStandardMaterial attach="material-2" map={topTexture} roughness={1} />
-            <meshStandardMaterial attach="material-3" map={textures.bottom} roughness={1} />
-            <meshStandardMaterial attach="material-4" map={textures.north} roughness={1} />
-            <meshStandardMaterial attach="material-5" map={textures.south} roughness={1} />
+            <meshBasicMaterial attach="material-0" map={textures.west}/>
+            <meshBasicMaterial attach="material-1" map={textures.east}/>
+            <meshBasicMaterial attach="material-2" map={topTexture}/>
+            <meshBasicMaterial attach="material-3" map={textures.bottom}/>
+            <meshBasicMaterial attach="material-4" map={textures.north}/>
+            <meshBasicMaterial attach="material-5" map={textures.south}  />
         </mesh>
     );
 });
