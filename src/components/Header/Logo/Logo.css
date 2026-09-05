@@ -15,12 +15,11 @@
     box-shadow: 0 0 20px var(--accent-glow);
 }
 
-.logo-box::after {
-    content: "";
-    width: 18px;
-    height: 18px;
-    border: 2px solid #fff;
-    border-radius: 3px;
+.logo__box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .logo__title {
