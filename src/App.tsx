@@ -12,7 +12,7 @@ export function Layout() {
             <Header />
             <Outlet />
             <Footer className="App__footer">
-                VoxelLab • Инструмент для персональной разработки под VoxelCore Engine lorem
+                VoxelLab • Инструмент для персональной разработки под VoxelCore Engine
             </Footer>
         </div>
     );
