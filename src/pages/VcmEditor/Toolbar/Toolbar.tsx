@@ -4,6 +4,8 @@ import TranslateIcon from "@/assets/translate.svg";
 import RotateIcon from "@/assets/rotate.svg";
 import ScaleIcon from "@/assets/scale.svg";
 import CenterIcon from "@/assets/center.svg";
+import AddIcon from "@/assets/add.svg";
+import type { SceneObject } from "../VcmEditor";
 
 export type TransformMode = "translate" | "rotate" | "scale";
 
@@ -11,9 +13,10 @@ interface ToolbarProps {
     currentMode: TransformMode;
     onChange: (mode: TransformMode) => void;
     centerCameraToOrigin: (position: [number, number, number]) => void;
+    addObject: (obj: Omit<SceneObject, "id">) => void;
 }
 
-export const Toolbar = ({ currentMode, onChange, centerCameraToOrigin }: ToolbarProps) => {
+export const Toolbar = ({ currentMode, onChange, centerCameraToOrigin, addObject }: ToolbarProps) => {
     const buttons: { mode: TransformMode; label: string; icon: string }[] = [
         { mode: "translate", label: "Перемещение", icon: TranslateIcon },
         { mode: "rotate", label: "Вращение", icon: RotateIcon },
@@ -41,6 +44,13 @@ export const Toolbar = ({ currentMode, onChange, centerCameraToOrigin }: Toolbar
                 title={"Центрировать камеру"}
                 type="button">
                 <img src={CenterIcon} alt={"Центрировать камеру"} className="btn-icon" />
+            </button>
+            <button
+                className={`vcm-editor__toolbar-btn`}
+                onClick={() => addObject({type: "box", position: [0, 0, 0], scale: [2, 2, 2], rotation: [0, 0, 0]})}
+                title={"Добавить куб"}
+                type="button">
+                <img src={AddIcon} alt={"Добавить куб"} className="btn-icon" />
             </button>
         </div>
     );

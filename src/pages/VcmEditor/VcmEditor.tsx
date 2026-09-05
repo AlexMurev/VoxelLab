@@ -11,7 +11,7 @@ import Editor2DText from "./Objects/Editor2DText";
 import Box from "./Objects/Box";
 import StatusBar from "./StatusBar/StatusBar";
 
-interface SceneObject {
+export interface SceneObject {
     id: string;
     type: "box" | "rect";
     position: [number, number, number];
@@ -19,10 +19,11 @@ interface SceneObject {
     scale: [number, number, number];
 }
 
-interface EditorStore {
+export interface EditorStore {
     objects: SceneObject[];
     selectedId: string | null;
     selectObject: (id: string | null) => void;
+    addObject: (obj: Omit<SceneObject, "id">) => void;
     updateObjectTransform: (
         id: string,
         position: [number, number, number],
@@ -33,16 +34,21 @@ interface EditorStore {
 
 const useEditorStore = create<EditorStore>((set) => ({
     objects: [
-        { id: "vcm-cube-1", type: "box", position: [0, 0, 0], rotation: [0, 0, 0], scale: [2, 2, 2] },
-        {
-            id: "vcm-cube-2",
-            type: "box",
-            position: [8, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [2, 2, 2],
-        },
+       
     ],
     selectedId: null,
+    addObject: (obj) =>
+        set((state) => {
+            const newObject: SceneObject = {
+                ...obj,
+                id: `vcm-${obj.type}-${crypto.randomUUID()}`,
+            };
+
+            return {
+                objects: [...state.objects, newObject],
+                selectedId: newObject.id,
+            };
+        }),
     selectObject: (id) => set({ selectedId: id }),
     updateObjectTransform: (id, position, rotation, scale) =>
         set((state) => ({
@@ -51,7 +57,7 @@ const useEditorStore = create<EditorStore>((set) => ({
 }));
 
 const VcmEditor = () => {
-    const { objects, selectedId, selectObject, updateObjectTransform } = useEditorStore();
+    const { objects, selectedId, selectObject, updateObjectTransform, addObject } = useEditorStore();
 
     const [selectedMesh, setSelectedMesh] = useState<THREE.Object3D | null>(null);
     const [transformMode, setTransformMode] = useState<TransformMode>("translate");
@@ -70,7 +76,6 @@ const VcmEditor = () => {
 
     const [activeTranslateSnap, setActiveTranslateSnap] = useState<number>(1);
 
-    // Отслеживаем нажатия клавиш
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.shiftKey) {
@@ -84,7 +89,7 @@ const VcmEditor = () => {
             if (e.key === "Shift" || e.key === "Control" || e.key === "Meta") {
                 if (e.shiftKey) setActiveTranslateSnap(0.25);
                 else if (e.ctrlKey || e.metaKey) setActiveTranslateSnap(0.1);
-                else setActiveTranslateSnap(1); 
+                else setActiveTranslateSnap(1);
             }
         };
 
@@ -124,6 +129,7 @@ const VcmEditor = () => {
                     currentMode={transformMode}
                     onChange={setTransformMode}
                     centerCameraToOrigin={setTargetPosition}
+                    addObject={addObject}
                 />
                 <Canvas camera={{ position: [8, 8, 16] }} onPointerMissed={handleCanvasMissed}>
                     <GizmoHelper alignment="top-right" margin={[100, 100]}>
@@ -133,6 +139,7 @@ const VcmEditor = () => {
                     <gridHelper args={[16, 16, colorGrid, colorGrid]} position={[0, -1, 0]} />
                     <gridHelper args={[48, 3, colorGrid, colorGrid]} position={[0, -1, 0]} />
                     <OrbitControls
+                        enableDamping={false}
                         makeDefault
                         enableZoom={true}
                         enablePan={true}
@@ -202,8 +209,6 @@ const VcmEditor = () => {
                         />
                     )}
 
-                    <directionalLight position={[2, 5, 3]} />
-                    <ambientLight intensity={1} />
                     <Editor2DText color={colorGrid} />
                     <FpsTracker onFpsUpdate={setFps} />
                 </Canvas>
