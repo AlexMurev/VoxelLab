@@ -10,7 +10,7 @@ const Editor2DText = ({color}: Editor2DTextProps) => {
         <>
             <Text
                 rotation={[-Math.PI / 2, 0, 0]}
-                position={[0, -0.5, 11]}
+                position={[0, -1, 11]}
                 fontSize={4}
                 color={color}
                 anchorX="center"
@@ -19,7 +19,7 @@ const Editor2DText = ({color}: Editor2DTextProps) => {
             </Text>
             <Text
                 rotation={[-Math.PI / 2, 0, 0]}
-                position={[0, -0.5, -11]}
+                position={[0, -1, -11]}
                 fontSize={4}
                 color={color}
                 anchorX="center"
@@ -28,7 +28,7 @@ const Editor2DText = ({color}: Editor2DTextProps) => {
             </Text>
             <Text
                 rotation={[-Math.PI / 2, 0, -Math.PI / 2]}
-                position={[11, -0.5, 0]}
+                position={[11, -1, 0]}
                 fontSize={4}
                 color={color}
                 anchorX="center"
@@ -37,7 +37,7 @@ const Editor2DText = ({color}: Editor2DTextProps) => {
             </Text>
             <Text
                 rotation={[-Math.PI / 2, 0, Math.PI / 2]}
-                position={[-11, -0.5, 0]}
+                position={[-11, -1, 0]}
                 fontSize={4}
                 color={color}
                 anchorX="center"
