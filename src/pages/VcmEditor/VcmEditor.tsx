@@ -1,13 +1,15 @@
 import "./VcmEditor.css";
 import { Canvas } from "@react-three/fiber";
-import { Edges, GizmoHelper, GizmoViewport, OrbitControls, TransformControls, useTexture } from "@react-three/drei";
+import { Edges, GizmoHelper, GizmoViewport, OrbitControls, TransformControls } from "@react-three/drei";
 import * as THREE from "three";
-import { forwardRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { Toolbar, type TransformMode } from "./Toolbar/Toolbar";
 import { useCssVariable } from "@/hooks/useCssVariable";
 import FpsTracker from "@/utils/FpsTracker";
-import Editor2DText from "./Editor3DText/Editor3DText";
+import Editor2DText from "./Objects/Editor2DText";
+import Box from "./Objects/Box";
+import StatusBar from "./StatusBar/StatusBar";
 
 interface SceneObject {
     id: string;
@@ -31,13 +33,13 @@ interface EditorStore {
 
 const useEditorStore = create<EditorStore>((set) => ({
     objects: [
-        { id: "vcm-cube-1", type: "box", position: [0, 0, 0], rotation: [0, 0, 0], scale: [0.125, 0.125, 0.125] },
+        { id: "vcm-cube-1", type: "box", position: [0, 0, 0], rotation: [0, 0, 0], scale: [2, 2, 2] },
         {
             id: "vcm-cube-2",
             type: "box",
-            position: [0.5, 0, 0],
+            position: [8, 0, 0],
             rotation: [0, 0, 0],
-            scale: [0.125, 0.125, 0.125],
+            scale: [2, 2, 2],
         },
     ],
     selectedId: null,
@@ -47,54 +49,6 @@ const useEditorStore = create<EditorStore>((set) => ({
             objects: state.objects.map((obj) => (obj.id === id ? { ...obj, position, rotation, scale } : obj)),
         })),
 }));
-
-interface BoxObjProps {
-    position: [number, number, number];
-    rotation: [number, number, number];
-    scale: [number, number, number];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onClick: (e: any) => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onDoubleClick: (e: any) => void;
-}
-
-const BoxObj = forwardRef<THREE.Mesh, BoxObjProps>((props, ref) => {
-    const textures = useTexture({
-        north: `${import.meta.env.BASE_URL}north.png`,
-        east: `${import.meta.env.BASE_URL}east.png`,
-        south: `${import.meta.env.BASE_URL}south.png`,
-        west: `${import.meta.env.BASE_URL}west.png`,
-        top: `${import.meta.env.BASE_URL}top.png`,
-        bottom: `${import.meta.env.BASE_URL}bottom.png`,
-    });
-
-    Object.values(textures).forEach((texture) => {
-        texture.magFilter = THREE.NearestFilter;
-        texture.minFilter = THREE.NearestFilter;
-    });
-    const topTexture = textures.top.clone();
-    topTexture.needsUpdate = true;
-    topTexture.center.set(0.5, 0.5);
-    topTexture.rotation = Math.PI;
-
-    return (
-        <mesh
-            ref={ref}
-            position={props.position}
-            rotation={props.rotation}
-            scale={props.scale}
-            onClick={props.onClick}
-            onDoubleClick={props.onDoubleClick}>
-            <boxGeometry args={[1, 1, 1]} />
-            <meshStandardMaterial attach="material-0" map={textures.west} roughness={1} />
-            <meshStandardMaterial attach="material-1" map={textures.east} roughness={1} />
-            <meshStandardMaterial attach="material-2" map={topTexture} roughness={1} />
-            <meshStandardMaterial attach="material-3" map={textures.bottom} roughness={1} />
-            <meshStandardMaterial attach="material-4" map={textures.north} roughness={1} />
-            <meshStandardMaterial attach="material-5" map={textures.south} roughness={1} />
-        </mesh>
-    );
-});
 
 const VcmEditor = () => {
     const { objects, selectedId, selectObject, updateObjectTransform } = useEditorStore();
@@ -113,6 +67,35 @@ const VcmEditor = () => {
     const colorPhantomEdges = useCssVariable("--accent-primary", "#0000ff");
 
     const [fps, setFps] = useState(0);
+
+    const [activeTranslateSnap, setActiveTranslateSnap] = useState<number>(1);
+
+    // Отслеживаем нажатия клавиш
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.shiftKey) {
+                setActiveTranslateSnap(0.25);
+            } else if (e.ctrlKey || e.metaKey) {
+                setActiveTranslateSnap(0.1);
+            }
+        };
+
+        const handleKeyUp = (e: KeyboardEvent) => {
+            if (e.key === "Shift" || e.key === "Control" || e.key === "Meta") {
+                if (e.shiftKey) setActiveTranslateSnap(0.25);
+                else if (e.ctrlKey || e.metaKey) setActiveTranslateSnap(0.1);
+                else setActiveTranslateSnap(1); 
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
+        };
+    }, []);
 
     const handleTransform = (e?: THREE.Event) => {
         if (!e || !selectedId) return;
@@ -142,13 +125,13 @@ const VcmEditor = () => {
                     onChange={setTransformMode}
                     centerCameraToOrigin={setTargetPosition}
                 />
-                <Canvas camera={{ position: [1, 1, 2] }} onPointerMissed={handleCanvasMissed}>
+                <Canvas camera={{ position: [8, 8, 16] }} onPointerMissed={handleCanvasMissed}>
                     <GizmoHelper alignment="top-right" margin={[100, 100]}>
                         <GizmoViewport />
                     </GizmoHelper>
-                    <axesHelper args={[1]} position={[-0.5, -0.499, -0.5]} />
-                    <gridHelper args={[1, 16, colorGrid, colorGrid]} position={[0, -0.5, 0]} />
-                    <gridHelper args={[3, 3, colorGrid, colorGrid]} position={[0, -0.5, 0]} />
+                    <axesHelper args={[16]} position={[-8, -0.999, -8]} />
+                    <gridHelper args={[16, 16, colorGrid, colorGrid]} position={[0, -1, 0]} />
+                    <gridHelper args={[48, 3, colorGrid, colorGrid]} position={[0, -1, 0]} />
                     <OrbitControls
                         makeDefault
                         enableZoom={true}
@@ -157,7 +140,7 @@ const VcmEditor = () => {
                         minAzimuthAngle={-Infinity}
                         maxAzimuthAngle={Infinity}
                         minPolarAngle={0}
-                        maxDistance={15}
+                        maxDistance={240}
                         minDistance={0.01}
                         maxPolarAngle={Math.PI}
                         target={targetPosition}
@@ -175,7 +158,7 @@ const VcmEditor = () => {
                     )}
 
                     {objects.map((obj) => (
-                        <BoxObj
+                        <Box
                             key={obj.id}
                             position={obj.position}
                             rotation={obj.rotation}
@@ -196,8 +179,8 @@ const VcmEditor = () => {
                         <TransformControls
                             object={selectedMesh}
                             mode={transformMode}
-                            translationSnap={1 / 64}
-                            scaleSnap={1 / 32}
+                            translationSnap={activeTranslateSnap}
+                            scaleSnap={activeTranslateSnap}
                             rotationSnap={22.5 * (Math.PI / 180)}
                             onObjectChange={handleTransform}
                             onMouseDown={() => {
@@ -221,25 +204,16 @@ const VcmEditor = () => {
 
                     <directionalLight position={[2, 5, 3]} />
                     <ambientLight intensity={1} />
-                    <Editor2DText color={colorGrid}/>
+                    <Editor2DText color={colorGrid} />
                     <FpsTracker onFpsUpdate={setFps} />
                 </Canvas>
-                <div className="vcm-editor__status-bar">
-                    <span className="vcm-status-item">
-                        <span className="vcm-status-label">FPS:</span>
-                        <span className="vcm-status-value">{fps}</span>
-                    </span>
-                    {selectedId && (
-                        <span className="vcm-status-item">
-                            <span className="vcm-status-label">MODE:</span>
-                            <span className="vcm-status-value">{transformMode.toUpperCase()}</span>
-                        </span>
-                    )}
-                    <span className="vcm-status-item">
-                        <span className="vcm-status-label">OBJECT:</span>
-                        <span className="vcm-status-value">{selectedId}</span>
-                    </span>
-                </div>
+                <StatusBar
+                    items={[
+                        ["FPS:", fps.toString()],
+                        ["MODE:", transformMode.toUpperCase()],
+                        ["OBJECT:", selectedId?.toString()],
+                    ]}
+                />
             </div>
         </div>
     );
