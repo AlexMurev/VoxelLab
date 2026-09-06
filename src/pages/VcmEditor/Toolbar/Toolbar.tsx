@@ -1,66 +1,42 @@
+import Icon from "@/components/Icon/Icon";
 import "./Toolbar.css";
 
-import TranslateIcon from "@/assets/translate.svg";
-import RotateIcon from "@/assets/rotate.svg";
-import ScaleIcon from "@/assets/scale.svg";
-import CenterIcon from "@/assets/center.svg";
-import AddIcon from "@/assets/add.svg";
-import type { SceneObject } from "../editorStore";
-import { Euler, Vector3 } from "three";
-
-export type TransformMode = "translate" | "rotate" | "scale";
+export interface ToolbarItem {
+    id: string;
+    icon: string; // путь к иконке (передаётся в src компонента Icon)
+    label: string; // текст для title и alt
+    onClick?: () => void;
+    isActive?: boolean; // активное состояние (подсветка)
+    align?: "left" | "right"; // группировка, по умолчанию left
+}
 
 interface ToolbarProps {
-    currentMode: TransformMode;
-    onChange: (mode: TransformMode) => void;
-    centerCameraToOrigin: (position: Vector3) => void;
-    addObject: (obj: Omit<SceneObject, "id">) => void;
+    items: ToolbarItem[];
     className?: string;
 }
 
-export const Toolbar = ({ currentMode, onChange, centerCameraToOrigin, addObject, className }: ToolbarProps) => {
-    const buttons: { mode: TransformMode; label: string; icon: string }[] = [
-        { mode: "translate", label: "Перемещение", icon: TranslateIcon },
-        { mode: "rotate", label: "Вращение", icon: RotateIcon },
-        { mode: "scale", label: "Масштаб", icon: ScaleIcon },
-    ];
+export const Toolbar = ({ items, className = "" }: ToolbarProps) => {
+    const leftItems = items.filter((item) => item.align !== "right");
+    const rightItems = items.filter((item) => item.align === "right");
+
+    const renderButtons = (buttonItems: ToolbarItem[]) =>
+        buttonItems.map(({ id, icon, label, onClick, isActive }) => (
+            <button
+                key={id}
+                className={`toolbar__btn ${isActive ? "toolbar__btn--active" : ""}`}
+                onClick={onClick}
+                title={label}
+                type="button">
+                <Icon src={icon} size={14}  />
+            </button>
+        ));
 
     return (
-        <div className={`toolsbar ${className || ""}`}>
-            {buttons.map((btn) => {
-                const isActive = currentMode === btn.mode;
-                return (
-                    <button
-                        key={btn.mode}
-                        className={`toolsbar__btn ${isActive ? "toolsbar__btn--active" : ""}`}
-                        onClick={() => onChange(btn.mode)}
-                        title={btn.label}
-                        type="button">
-                        <img src={btn.icon} alt={btn.label} className="toolsbar__icon" />
-                    </button>
-                );
-            })}
-            <button
-                className="toolsbar__btn"
-                onClick={() => centerCameraToOrigin(new Vector3(0, 0, 0))}
-                title="Центрировать камеру"
-                type="button">
-                <img src={CenterIcon} alt="Центрировать камеру" className="toolsbar__icon" />
-            </button>
-            <button
-                className="toolsbar__btn"
-                onClick={() =>
-                    addObject({
-                        type: "box",
-                        position: new Vector3(0, 0, 0),
-                        scale: new Vector3(2, 2, 2),
-                        rotation: new Euler(0, 0, 0),
-                    })
-                }
-                title="Добавить куб"
-                type="button">
-                <img src={AddIcon} alt="Добавить куб" className="toolsbar__icon" />
-            </button>
+        <div className={`toolbar ${className}`}>
+            <div className="toolbar__group">{renderButtons(leftItems)}</div>
+            {rightItems.length > 0 && (
+                <div className="toolbar__group toolbar__group--right">{renderButtons(rightItems)}</div>
+            )}
         </div>
     );
 };
