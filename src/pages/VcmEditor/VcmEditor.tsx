@@ -2,8 +2,8 @@ import "./VcmEditor.css";
 import { Canvas } from "@react-three/fiber";
 import { Edges, GizmoHelper, GizmoViewport, OrbitControls, TransformControls } from "@react-three/drei";
 import * as THREE from "three";
+import { Vector3, Euler } from "three";
 import { useEffect, useState } from "react";
-import { create } from "zustand";
 import { Toolbar, type TransformMode } from "./Toolbar/Toolbar";
 import { useCssVariable } from "@/hooks/useCssVariable";
 import FpsTracker from "@/utils/FpsTracker";
@@ -11,64 +11,22 @@ import Editor2DText from "./Objects/Editor2DText";
 import Box from "./Objects/Box";
 import StatusBar from "./StatusBar/StatusBar";
 import Sidebar from "./Sidebar/Sidebar";
-import { Panel, Group} from "react-resizable-panels";
+import { Panel, Group } from "react-resizable-panels";
 import PanelSeparator from "./PanelSeparator/PanelSeparator";
-
-export interface SceneObject {
-    id: string;
-    type: "box" | "rect";
-    position: [number, number, number];
-    rotation: [number, number, number];
-    scale: [number, number, number];
-}
-
-export interface EditorStore {
-    objects: SceneObject[];
-    selectedId: string | null;
-    selectObject: (id: string | null) => void;
-    addObject: (obj: Omit<SceneObject, "id">) => void;
-    updateObjectTransform: (
-        id: string,
-        position: [number, number, number],
-        rotation: [number, number, number],
-        scale: [number, number, number],
-    ) => void;
-}
-
-const useEditorStore = create<EditorStore>((set) => ({
-    objects: [],
-    selectedId: null,
-    addObject: (obj) =>
-        set((state) => {
-            const newObject: SceneObject = {
-                ...obj,
-                id: `vcm-${obj.type}-${crypto.randomUUID()}`,
-            };
-
-            return {
-                objects: [...state.objects, newObject],
-                selectedId: newObject.id,
-            };
-        }),
-    selectObject: (id) => set({ selectedId: id }),
-    updateObjectTransform: (id, position, rotation, scale) =>
-        set((state) => ({
-            objects: state.objects.map((obj) => (obj.id === id ? { ...obj, position, rotation, scale } : obj)),
-        })),
-}));
+import { useEditorStore } from "./editorStore";
 
 const VcmEditor = () => {
     const { objects, selectedId, selectObject, updateObjectTransform, addObject } = useEditorStore();
 
     const [selectedMesh, setSelectedMesh] = useState<THREE.Object3D | null>(null);
     const [transformMode, setTransformMode] = useState<TransformMode>("translate");
-    const [targetPosition, setTargetPosition] = useState<[number, number, number]>([0, 0, 0]);
+    const [targetPosition, setTargetPosition] = useState<Vector3>(new Vector3(0, 0, 0));
     const [isDraggingBar, setIsDraggingBar] = useState(false);
 
     const [dragStartTransform, setDragStartTransform] = useState<{
-        position: [number, number, number];
-        rotation: [number, number, number];
-        scale: [number, number, number];
+        position: Vector3;
+        rotation: Euler;
+        scale: Vector3;
     } | null>(null);
 
     const colorGrid = useCssVariable("--border-color", "#880000");
@@ -108,12 +66,7 @@ const VcmEditor = () => {
         const target = e.target as { object: THREE.Object3D };
         if (target && target.object) {
             const { position, rotation, scale } = target.object;
-            updateObjectTransform(
-                selectedId,
-                position.toArray() as [number, number, number],
-                [rotation.x, rotation.y, rotation.z],
-                scale.toArray() as [number, number, number],
-            );
+            updateObjectTransform(selectedId, position, rotation, scale);
         }
     };
 
@@ -202,13 +155,9 @@ const VcmEditor = () => {
                                     onMouseDown={() => {
                                         if (selectedMesh) {
                                             setDragStartTransform({
-                                                position: selectedMesh.position.toArray() as [number, number, number],
-                                                rotation: [
-                                                    selectedMesh.rotation.x,
-                                                    selectedMesh.rotation.y,
-                                                    selectedMesh.rotation.z,
-                                                ],
-                                                scale: selectedMesh.scale.toArray() as [number, number, number],
+                                                position: selectedMesh.position,
+                                                rotation: selectedMesh.rotation,
+                                                scale: selectedMesh.scale,
                                             });
                                         }
                                     }}

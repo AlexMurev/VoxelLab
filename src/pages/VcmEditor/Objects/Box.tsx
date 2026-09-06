@@ -1,15 +1,16 @@
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
+import {Vector3, Euler} from "three";
 import { forwardRef } from "react";
 
 interface BoxProps {
-	position: [number, number, number];
-	rotation: [number, number, number];
-	scale: [number, number, number];
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	onClick: (e: any) => void;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	onDoubleClick: (e: any) => void;
+    position: Vector3;
+    rotation: Euler;
+    scale: Vector3;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onClick: (e: any) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onDoubleClick: (e: any) => void;
 }
 
 const Box = forwardRef<THREE.Mesh, BoxProps>((props, ref) => {

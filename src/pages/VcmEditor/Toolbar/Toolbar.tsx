@@ -5,14 +5,15 @@ import RotateIcon from "@/assets/rotate.svg";
 import ScaleIcon from "@/assets/scale.svg";
 import CenterIcon from "@/assets/center.svg";
 import AddIcon from "@/assets/add.svg";
-import type { SceneObject } from "../VcmEditor";
+import type { SceneObject } from "../editorStore";
+import { Euler, Vector3 } from "three";
 
 export type TransformMode = "translate" | "rotate" | "scale";
 
 interface ToolbarProps {
     currentMode: TransformMode;
     onChange: (mode: TransformMode) => void;
-    centerCameraToOrigin: (position: [number, number, number]) => void;
+    centerCameraToOrigin: (position: Vector3) => void;
     addObject: (obj: Omit<SceneObject, "id">) => void;
     className?: string;
 }
@@ -41,14 +42,21 @@ export const Toolbar = ({ currentMode, onChange, centerCameraToOrigin, addObject
             })}
             <button
                 className="toolsbar__btn"
-                onClick={() => centerCameraToOrigin([0, 0, 0])}
+                onClick={() => centerCameraToOrigin(new Vector3(0, 0, 0))}
                 title="Центрировать камеру"
                 type="button">
                 <img src={CenterIcon} alt="Центрировать камеру" className="toolsbar__icon" />
             </button>
             <button
                 className="toolsbar__btn"
-                onClick={() => addObject({ type: "box", position: [0, 0, 0], scale: [2, 2, 2], rotation: [0, 0, 0] })}
+                onClick={() =>
+                    addObject({
+                        type: "box",
+                        position: new Vector3(0, 0, 0),
+                        scale: new Vector3(2, 2, 2),
+                        rotation: new Euler(0, 0, 0),
+                    })
+                }
                 title="Добавить куб"
                 type="button">
                 <img src={AddIcon} alt="Добавить куб" className="toolsbar__icon" />

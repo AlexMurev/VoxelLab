@@ -1,0 +1,60 @@
+.sidebar__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar__label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+/* Группы инпутов X, Y, Z */
+.sidebar__transform-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.sidebar__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar__axis-label {
+    position: absolute;
+    left: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.sidebar__axis-label--x { color: #ef4444; }
+.sidebar__axis-label--y { color: #10b981; }
+.sidebar__axis-label--z { color: #3b82f6; }
+
+.sidebar__input {
+    width: 100%;
+    height: 28px;
+    padding: 0 6px 0 20px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: calc(var(--radius) / 2);
+    color: var(--text-main);
+    font-size: 12px;
+    outline: none;
+    transition: var(--transition);
+}
+
+.sidebar__input::-webkit-outer-spin-button,
+.sidebar__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.sidebar__input:focus {
+    border-color: var(--border-highlight);
+    box-shadow: 0 0 0 1px var(--border-highlight);
+}
