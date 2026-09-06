@@ -3,13 +3,14 @@ import "./FormControls.css";
 import FieldWrapper from "./FieldWrapper";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-    title?: string,
-    placeholder?: string
+    title?: string;
+    placeholder?: string;
+    className?: string;
 }
 
-const Input = ({ title, placeholder, ...props }: InputProps) => (
+const Input = ({ title, placeholder, className, ...props }: InputProps) => (
     <FieldWrapper title={title}>
-        <input className="form-field__input" placeholder={placeholder} {...props} />
+        <input className={`form-field__input ${className}`} placeholder={placeholder} {...props} />
     </FieldWrapper>
 );
 

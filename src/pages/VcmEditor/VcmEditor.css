@@ -31,25 +31,3 @@
 .vcm-editor__status {
     grid-area: status;
 }
-
-.vcm-editor__separator {
-    width: 5px;
-    height: 100%;
-    background-color: rgb(from var(--border-color) r g b / 0.4); 
-    cursor: col-resize;
-    z-index: 10;
-    border-radius: var(--radius);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* При наведении — мягкое проявление цвета */
-.vcm-editor__separator:hover {
-    background-color: rgb(from var(--border-highlight) r g b / 0.4);
-}
-
-/* При удержании и перетаскивании — аккуратный акцент без выжигающего свечения */
-.vcm-editor__separator:active {
-    background-color: var(--accent-primary);
-    /* Очень тонкое, едва заметное свечение */
-    box-shadow: 0 0 6px rgb(from var(--accent-glow) r g b / 0.0001);
-}

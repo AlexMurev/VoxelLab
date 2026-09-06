@@ -1,0 +1,10 @@
+.sidebar__icon {
+    display: inline-block;
+    flex-shrink: 0;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+}

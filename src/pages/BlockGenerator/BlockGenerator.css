@@ -11,6 +11,7 @@
 .block-generator__form {
     display: flex;
     flex-direction: column;
+    gap: 1.8rem;
 }
 
 .block-generator__actions {

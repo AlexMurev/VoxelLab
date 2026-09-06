@@ -1,0 +1,26 @@
+.panel-separator {
+    background-color: rgb(from var(--border-color) r g b / 0.4); 
+    cursor: col-resize;
+    z-index: 10;
+    border-radius: var(--radius);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.panel-separator:hover {
+    background-color: rgb(from var(--border-highlight) r g b / 0.4);
+}
+
+.panel-separator:active {
+    background-color: var(--accent-primary);
+    box-shadow: 0 0 6px rgb(from var(--accent-glow) r g b / 0.0001);
+}
+
+.panel-separator__horizontal {
+	height: 5px;
+    width: 100%;
+}
+
+.panel-separator__vertical {
+	width: 5px;
+    height: 100%;
+}

@@ -11,7 +11,8 @@ import Editor2DText from "./Objects/Editor2DText";
 import Box from "./Objects/Box";
 import StatusBar from "./StatusBar/StatusBar";
 import Sidebar from "./Sidebar/Sidebar";
-import { Panel, Group, Separator} from "react-resizable-panels";
+import { Panel, Group} from "react-resizable-panels";
+import PanelSeparator from "./PanelSeparator/PanelSeparator";
 
 export interface SceneObject {
     id: string;
@@ -222,7 +223,7 @@ const VcmEditor = () => {
                         </Canvas>
                     </div>
                 </Panel>
-                <Separator className="vcm-editor__separator" />
+                <PanelSeparator type="vertical" />
                 <Panel defaultSize={330} minSize={130} maxSize="50%">
                     <Sidebar />
                 </Panel>
