@@ -26,14 +26,15 @@ import AddIcon from "@/assets/add.svg";
 import AddGroupIcon from "@/assets/add-group.svg";
 import SearchIcon from "@/assets/search.svg";
 import { useTransformSnap } from "./useTransformSnap";
-import { useTransformMode } from "./useTransformMode";
+import { useHotkey } from "@/hooks/useHotkey";
 
+type TransformMode = "translate" | "rotate" | "scale";
 
 const VcmEditor = () => {
     const { objects, selectedId, selectObject, updateObject, addObject } = useEditorStore();
 
     const [selectedMesh, setSelectedMesh] = useState<THREE.Object3D | null>(null);
-    const {mode: transformMode, setTransformMode} = useTransformMode("translate");
+    const [transformMode, setTransformMode] = useState<TransformMode>("translate");
     const [targetPosition, setTargetPosition] = useState<Vec3>([0, 0, 0]);
     const [isDraggingBar, setIsDraggingBar] = useState(false);
 
@@ -48,6 +49,12 @@ const VcmEditor = () => {
 
     const [fps, setFps] = useState(0);
     const activeTranslateSnap = useTransformSnap(1);
+
+    useHotkey({
+        KeyV: () => setTransformMode("translate"),
+        KeyR: () => setTransformMode("rotate"),
+        KeyS: () => setTransformMode("scale"),
+    });
 
     const handleCanvasMissed = () => {
         selectObject(null);
