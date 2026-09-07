@@ -2,7 +2,7 @@ import "./VcmEditor.css";
 import { Canvas } from "@react-three/fiber";
 import { Edges, GizmoHelper, GizmoViewport, OrbitControls, TransformControls } from "@react-three/drei";
 import * as THREE from "three";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Toolbar } from "./Toolbar/Toolbar";
 import { useCssVariable } from "@/hooks/useCssVariable";
 import FpsTracker from "@/utils/FpsTracker";
@@ -25,6 +25,7 @@ import CenterIcon from "@/assets/center.svg";
 import AddIcon from "@/assets/add.svg";
 import AddGroupIcon from "@/assets/add-group.svg";
 import SearchIcon from "@/assets/search.svg";
+import { useTransformSnap } from "./useTransformSnap";
 
 type TransformMode = "translate" | "rotate" | "scale";
 
@@ -46,33 +47,7 @@ const VcmEditor = () => {
     const colorPhantomEdges = useCssVariable("--accent-primary", "#0000ff");
 
     const [fps, setFps] = useState(0);
-    const [activeTranslateSnap, setActiveTranslateSnap] = useState<number>(1);
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.shiftKey) {
-                setActiveTranslateSnap(0.25);
-            } else if (e.ctrlKey || e.metaKey) {
-                setActiveTranslateSnap(0.1);
-            }
-        };
-
-        const handleKeyUp = (e: KeyboardEvent) => {
-            if (e.key === "Shift" || e.key === "Control" || e.key === "Meta") {
-                if (e.shiftKey) setActiveTranslateSnap(0.25);
-                else if (e.ctrlKey || e.metaKey) setActiveTranslateSnap(0.1);
-                else setActiveTranslateSnap(1);
-            }
-        };
-
-        window.addEventListener("keydown", handleKeyDown);
-        window.addEventListener("keyup", handleKeyUp);
-
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-            window.removeEventListener("keyup", handleKeyUp);
-        };
-    }, []);
+    const activeTranslateSnap = useTransformSnap(1);
 
     const handleCanvasMissed = () => {
         selectObject(null);
