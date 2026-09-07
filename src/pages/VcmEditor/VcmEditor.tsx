@@ -26,14 +26,14 @@ import AddIcon from "@/assets/add.svg";
 import AddGroupIcon from "@/assets/add-group.svg";
 import SearchIcon from "@/assets/search.svg";
 import { useTransformSnap } from "./useTransformSnap";
+import { useTransformMode } from "./useTransformMode";
 
-type TransformMode = "translate" | "rotate" | "scale";
 
 const VcmEditor = () => {
     const { objects, selectedId, selectObject, updateObject, addObject } = useEditorStore();
 
     const [selectedMesh, setSelectedMesh] = useState<THREE.Object3D | null>(null);
-    const [transformMode, setTransformMode] = useState<TransformMode>("translate");
+    const {mode: transformMode, setTransformMode} = useTransformMode("translate");
     const [targetPosition, setTargetPosition] = useState<Vec3>([0, 0, 0]);
     const [isDraggingBar, setIsDraggingBar] = useState(false);
 
@@ -73,21 +73,21 @@ const VcmEditor = () => {
                                 {
                                     id: "translate",
                                     icon: TranslateIcon,
-                                    label: "Перемещение",
+                                    label: "Перемещение (V)",
                                     onClick: () => setTransformMode("translate"),
                                     isActive: transformMode === "translate",
                                 },
                                 {
                                     id: "rotate",
                                     icon: RotateIcon,
-                                    label: "Вращение",
+                                    label: "Вращение (R)",
                                     onClick: () => setTransformMode("rotate"),
                                     isActive: transformMode === "rotate",
                                 },
                                 {
                                     id: "scale",
                                     icon: ScaleIcon,
-                                    label: "Масштаб",
+                                    label: "Масштаб (S)",
                                     onClick: () => setTransformMode("scale"),
                                     isActive: transformMode === "scale",
                                 },
