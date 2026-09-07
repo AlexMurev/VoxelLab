@@ -2,7 +2,6 @@ import "./VcmEditor.css";
 import { Canvas } from "@react-three/fiber";
 import { Edges, GizmoHelper, GizmoViewport, OrbitControls, TransformControls } from "@react-three/drei";
 import * as THREE from "three";
-import { Vector3, Euler } from "three";
 import { useEffect, useState } from "react";
 import { Toolbar } from "./Toolbar/Toolbar";
 import { useCssVariable } from "@/hooks/useCssVariable";
@@ -20,21 +19,29 @@ import RotateIcon from "@/assets/rotate.svg";
 import ScaleIcon from "@/assets/scale.svg";
 import CenterIcon from "@/assets/center.svg";
 import AddIcon from "@/assets/add.svg";
+import BoxIcon from "@/assets/box.svg";
+import AddGroupIcon from "@/assets/add-group.svg";
+import SearchIcon from "@/assets/search.svg";
+import ElementItem from "./ElementItem/ElementItem";
+import SidebarSection from "./Sidebar/SidebarSection/SidebarSection";
+import type { Vec3 } from "@/types/vectors";
+import TransformInputs from "./TransformInputs/TransformInputs";
 
 type TransformMode = "translate" | "rotate" | "scale";
 
 const VcmEditor = () => {
-    const { objects, selectedId, selectObject, updateObjectTransform, addObject } = useEditorStore();
+    const { objects, selectedId, selectObject, updatePosition, updateRotation, updateScale, addObject } =
+        useEditorStore();
 
     const [selectedMesh, setSelectedMesh] = useState<THREE.Object3D | null>(null);
     const [transformMode, setTransformMode] = useState<TransformMode>("translate");
-    const [targetPosition, setTargetPosition] = useState<Vector3>(new Vector3(0, 0, 0));
+    const [targetPosition, setTargetPosition] = useState<Vec3>([0, 0, 0]);
     const [isDraggingBar, setIsDraggingBar] = useState(false);
 
     const [dragStartTransform, setDragStartTransform] = useState<{
-        position: Vector3;
-        rotation: Euler;
-        scale: Vector3;
+        position: Vec3;
+        rotation: Vec3;
+        scale: Vec3;
     } | null>(null);
 
     const colorGrid = useCssVariable("--border-color", "#880000");
@@ -69,15 +76,6 @@ const VcmEditor = () => {
         };
     }, []);
 
-    const handleTransform = (e?: THREE.Event) => {
-        if (!e || !selectedId) return;
-        const target = e.target as { object: THREE.Object3D };
-        if (target && target.object) {
-            const { position, rotation, scale } = target.object;
-            updateObjectTransform(selectedId, position, rotation, scale);
-        }
-    };
-
     const handleCanvasMissed = () => {
         selectObject(null);
         setSelectedMesh(null);
@@ -91,7 +89,7 @@ const VcmEditor = () => {
                 onLayoutChange={() => setIsDraggingBar(true)}
                 onLayoutChanged={() => setIsDraggingBar(false)}>
                 <Panel defaultSize={300} minSize={200}>
-                    Тут будет второй сайдбар
+                    <Sidebar></Sidebar>
                 </Panel>
                 <PanelSeparator />
                 <Panel>
@@ -124,7 +122,7 @@ const VcmEditor = () => {
                                     id: "center",
                                     icon: CenterIcon,
                                     label: "Центрировать камеру",
-                                    onClick: () => setTargetPosition(new Vector3(0, 0, 0)),
+                                    onClick: () => setTargetPosition([0, 0, 0]),
                                 },
                                 {
                                     id: "add-cube",
@@ -133,9 +131,9 @@ const VcmEditor = () => {
                                     onClick: () =>
                                         addObject({
                                             type: "box",
-                                            position: new Vector3(0, 0, 0),
-                                            scale: new Vector3(2, 2, 2),
-                                            rotation: new Euler(0, 0, 0),
+                                            position: [0, 0, 0],
+                                            scale: [2, 2, 2],
+                                            rotation: [0, 0, 0],
                                         }),
                                 },
                             ]}
@@ -211,18 +209,35 @@ const VcmEditor = () => {
                                                 translationSnap={activeTranslateSnap}
                                                 scaleSnap={activeTranslateSnap}
                                                 rotationSnap={22.5 * (Math.PI / 180)}
-                                                onObjectChange={handleTransform}
+                                                // 1. При перетаскивании мы НЕ дергаем Zustand, а просто стреляем ивентом для инпутов
+                                                onObjectChange={() => {
+                                                    window.dispatchEvent(new CustomEvent("transform-change"));
+                                                }}
                                                 onMouseDown={() => {
                                                     if (selectedMesh) {
                                                         setDragStartTransform({
-                                                            position: selectedMesh.position,
-                                                            rotation: selectedMesh.rotation,
-                                                            scale: selectedMesh.scale,
+                                                            position: selectedMesh.position.toArray() as Vec3,
+                                                            rotation: selectedMesh.rotation.toArray() as Vec3,
+                                                            scale: selectedMesh.scale.toArray() as Vec3,
                                                         });
                                                     }
                                                 }}
                                                 onMouseUp={() => {
+                                                    // Убираем фантомный куб
                                                     setDragStartTransform(null);
+
+                                                    // 2. А вот когда отпустили — сохраняем всё в Zustand для истории/стейта
+                                                    if (selectedMesh && selectedId) {
+                                                        updatePosition(
+                                                            selectedId,
+                                                            selectedMesh.position.toArray() as Vec3,
+                                                        );
+                                                        updateRotation(
+                                                            selectedId,
+                                                            selectedMesh.rotation.toArray() as Vec3,
+                                                        );
+                                                        updateScale(selectedId, selectedMesh.scale.toArray() as Vec3);
+                                                    }
                                                 }}
                                             />
                                         )}
@@ -236,7 +251,39 @@ const VcmEditor = () => {
                             <PanelSeparator type="vertical" />
 
                             <Panel defaultSize={330} minSize={130} groupResizeBehavior="preserve-pixel-size">
-                                <Sidebar />
+                                <Sidebar>
+                                    <SidebarSection minSize={250} defaultSize={250} title="Трансформ">
+                                        <TransformInputs selectedMesh={selectedMesh} selectedId={selectedId} />
+                                    </SidebarSection>
+
+                                    <PanelSeparator type="horizontal" />
+
+                                    <SidebarSection minSize={150} title="Элементы">
+                                        <Toolbar
+                                            items={[
+                                                { id: "add", icon: AddIcon, label: "Добавить", align: "left" },
+                                                {
+                                                    id: "group",
+                                                    icon: AddGroupIcon,
+                                                    label: "Группировать",
+                                                    align: "left",
+                                                },
+                                                { id: "search", icon: SearchIcon, label: "Поиск", align: "right" },
+                                            ]}
+                                        />
+
+                                        <div className="sidebar__elements-list">
+                                            <ElementItem
+                                                name="Cube_01"
+                                                iconSrc={BoxIcon}
+                                                iconColor="#ef4444"
+                                                isSelected
+                                            />
+                                            <ElementItem name="Cube_02" iconSrc={BoxIcon} iconColor="#f59e0b" />
+                                            <ElementItem name="Cube_03" iconSrc={BoxIcon} iconColor="#3b82f6" />
+                                        </div>
+                                    </SidebarSection>
+                                </Sidebar>
                             </Panel>
                         </Group>
                         <StatusBar

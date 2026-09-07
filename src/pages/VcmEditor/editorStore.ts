@@ -1,12 +1,12 @@
-import type { Vector3, Euler } from "three";
+import type { Vec3 } from "@/types/vectors";
 import { create } from "zustand";
 
 export interface SceneObject {
     id: string;
     type: "box" | "rect";
-    position: Vector3;
-    rotation: Euler;
-    scale: Vector3;
+    position: Vec3;
+    rotation: Vec3;
+    scale: Vec3;
 }
 
 export interface EditorStore {
@@ -14,7 +14,9 @@ export interface EditorStore {
     selectedId: string | null;
     selectObject: (id: string | null) => void;
     addObject: (obj: Omit<SceneObject, "id">) => void;
-    updateObjectTransform: (id: string, position: Vector3, rotation: Euler, scale: Vector3) => void;
+    updatePosition: (id: string, position: Vec3) => void;
+    updateRotation: (id: string, rotation: Vec3) => void;
+    updateScale: (id: string, scale: Vec3) => void;
 }
 
 export const useEditorStore = create<EditorStore>((set) => ({
@@ -33,8 +35,18 @@ export const useEditorStore = create<EditorStore>((set) => ({
             };
         }),
     selectObject: (id) => set({ selectedId: id }),
-    updateObjectTransform: (id, position, rotation, scale) =>
+    updatePosition: (id, position) =>
         set((state) => ({
-            objects: state.objects.map((obj) => (obj.id === id ? { ...obj, position, rotation, scale } : obj)),
+            objects: state.objects.map((obj) => (obj.id === id ? { ...obj, position } : obj)),
+        })),
+
+    updateRotation: (id, rotation) =>
+        set((state) => ({
+            objects: state.objects.map((obj) => (obj.id === id ? { ...obj, rotation } : obj)),
+        })),
+
+    updateScale: (id, scale) =>
+        set((state) => ({
+            objects: state.objects.map((obj) => (obj.id === id ? { ...obj, scale } : obj)),
         })),
 }));
