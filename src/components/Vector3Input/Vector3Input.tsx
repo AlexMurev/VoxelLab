@@ -10,16 +10,12 @@ interface Vector3InputProps {
 }
 
 const Vector3Input = ({ label, placeholders = ["0", "0", "0"], value, onChange }: Vector3InputProps) => {
-    // Храним индекс инпута (0=X, 1=Y, 2=Z), который сейчас редактируется
     const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
-    // Храним сырой текст только для редактируемого поля
     const [localValue, setLocalValue] = useState<string>("");
 
     const handleFocus = (index: number) => {
         setFocusedIndex(index);
-        // При фокусе берем текущее точное значение.
-        // Number(...toFixed(3)) отрезает хвосты вроде 1.00000000002
-        setLocalValue(Number(value[index].toFixed(3)).toString());
+        setLocalValue(Number(value[index].toFixed(5)).toString());
     };
 
     const commitChange = (index: number) => {
@@ -32,25 +28,22 @@ const Vector3Input = ({ label, placeholders = ["0", "0", "0"], value, onChange }
             newVector[index] = numValue;
             onChange(newVector);
         }
-        // Снимаем фокусный стейт
         setFocusedIndex(null);
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
         if (e.key === "Enter") {
             commitChange(index);
-            e.currentTarget.blur(); // Визуально убираем курсор
+            e.currentTarget.blur();
         } else if (e.key === "Escape") {
-            // Отмена ввода
             setFocusedIndex(null);
             e.currentTarget.blur();
         }
     };
 
-    // Определяем, что показывать в input
     const getDisplayValue = (index: number) => {
         if (focusedIndex === index) return localValue;
-        return Number(value[index].toFixed(3));
+        return Number(value[index].toFixed(5));
     };
 
     return (
@@ -64,7 +57,7 @@ const Vector3Input = ({ label, placeholders = ["0", "0", "0"], value, onChange }
                         </span>
                         <input
                             type="number"
-                            step="any" // Важно для 3D, чтобы браузер не ругался на дроби
+                            step="any"
                             className="vector3-input__input"
                             placeholder={placeholders[index]}
                             value={getDisplayValue(index)}

@@ -23,6 +23,15 @@ const TransformInputs = ({
         return () => window.removeEventListener("transform-change", handleUpdate);
     }, []);
 
+    // Подготавливаем значения вращения в градусах для отображения в UI
+    const rotationInDegrees: Vec3 = selectedMesh
+        ? [
+              THREE.MathUtils.radToDeg(selectedMesh.rotation.x),
+              THREE.MathUtils.radToDeg(selectedMesh.rotation.y),
+              THREE.MathUtils.radToDeg(selectedMesh.rotation.z),
+          ]
+        : [0, 0, 0];
+
     return (
         <div className="transform-inputs">
             <Vector3Input
@@ -31,13 +40,10 @@ const TransformInputs = ({
                 value={(selectedMesh?.position.toArray() as Vec3) || [0, 0, 0]}
                 onChange={(value) => {
                     if (selectedMesh && selectedId) {
-                        // 1. МГНОВЕННО применяем изменения к Three.js объекту
                         selectedMesh.position.set(value[0], value[1], value[2]);
 
-                        // 2. Отправляем в Zustand для истории и сохранения
                         updatePosition(selectedId, value);
 
-                        // 3. Дергаем локальный рендер, чтобы инпут сразу взял свежие цифры
                         window.dispatchEvent(new CustomEvent("transform-change"));
                     }
                 }}
@@ -57,11 +63,15 @@ const TransformInputs = ({
             <Vector3Input
                 label="Вращение"
                 placeholders={["0°", "0°", "0°"]}
-                value={(selectedMesh?.rotation.toArray() as Vec3) || [0, 0, 0]}
+                value={rotationInDegrees}
                 onChange={(value) => {
                     if (selectedMesh && selectedId) {
-                        selectedMesh.rotation.set(value[0], value[1], value[2]);
-                        updateRotation(selectedId, value);
+                        const radX = THREE.MathUtils.degToRad(value[0]);
+                        const radY = THREE.MathUtils.degToRad(value[1]);
+                        const radZ = THREE.MathUtils.degToRad(value[2]);
+
+                        selectedMesh.rotation.set(radX, radY, radZ);
+                        updateRotation(selectedId, [radX, radY, radZ]);
                         window.dispatchEvent(new CustomEvent("transform-change"));
                     }
                 }}

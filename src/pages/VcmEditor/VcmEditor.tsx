@@ -124,18 +124,6 @@ const VcmEditor = () => {
                                     label: "Центрировать камеру",
                                     onClick: () => setTargetPosition([0, 0, 0]),
                                 },
-                                {
-                                    id: "add-cube",
-                                    icon: AddIcon,
-                                    label: "Добавить куб",
-                                    onClick: () =>
-                                        addObject({
-                                            type: "box",
-                                            position: [0, 0, 0],
-                                            scale: [2, 2, 2],
-                                            rotation: [0, 0, 0],
-                                        }),
-                                },
                             ]}
                         />
                         <Group
@@ -209,7 +197,6 @@ const VcmEditor = () => {
                                                 translationSnap={activeTranslateSnap}
                                                 scaleSnap={activeTranslateSnap}
                                                 rotationSnap={22.5 * (Math.PI / 180)}
-                                                // 1. При перетаскивании мы НЕ дергаем Zustand, а просто стреляем ивентом для инпутов
                                                 onObjectChange={() => {
                                                     window.dispatchEvent(new CustomEvent("transform-change"));
                                                 }}
@@ -223,10 +210,8 @@ const VcmEditor = () => {
                                                     }
                                                 }}
                                                 onMouseUp={() => {
-                                                    // Убираем фантомный куб
                                                     setDragStartTransform(null);
 
-                                                    // 2. А вот когда отпустили — сохраняем всё в Zustand для истории/стейта
                                                     if (selectedMesh && selectedId) {
                                                         updatePosition(
                                                             selectedId,
@@ -261,7 +246,18 @@ const VcmEditor = () => {
                                     <SidebarSection minSize={150} title="Элементы">
                                         <Toolbar
                                             items={[
-                                                { id: "add", icon: AddIcon, label: "Добавить", align: "left" },
+                                                {
+                                                    id: "add-cube",
+                                                    icon: AddIcon,
+                                                    label: "Добавить куб",
+                                                    onClick: () =>
+                                                        addObject({
+                                                            type: "box",
+                                                            position: [0, 0, 0],
+                                                            scale: [2, 2, 2],
+                                                            rotation: [0, 0, 0],
+                                                        }),
+                                                },
                                                 {
                                                     id: "group",
                                                     icon: AddGroupIcon,
