@@ -13,25 +13,23 @@ import Sidebar from "./Sidebar/Sidebar";
 import { Panel, Group } from "react-resizable-panels";
 import PanelSeparator from "./PanelSeparator/PanelSeparator";
 import { useEditorStore } from "./editorStore";
+import SidebarSection from "./Sidebar/SidebarSection/SidebarSection";
+import type { Vec3 } from "@/types/vectors";
+import TransformInputs from "./TransformInputs/TransformInputs";
+import { ElementsList } from "./ElemntList/ElementsList";
 
 import TranslateIcon from "@/assets/translate.svg";
 import RotateIcon from "@/assets/rotate.svg";
 import ScaleIcon from "@/assets/scale.svg";
 import CenterIcon from "@/assets/center.svg";
 import AddIcon from "@/assets/add.svg";
-import BoxIcon from "@/assets/box.svg";
 import AddGroupIcon from "@/assets/add-group.svg";
 import SearchIcon from "@/assets/search.svg";
-import ElementItem from "./ElementItem/ElementItem";
-import SidebarSection from "./Sidebar/SidebarSection/SidebarSection";
-import type { Vec3 } from "@/types/vectors";
-import TransformInputs from "./TransformInputs/TransformInputs";
 
 type TransformMode = "translate" | "rotate" | "scale";
 
 const VcmEditor = () => {
-    const { objects, selectedId, selectObject, updatePosition, updateRotation, updateScale, addObject } =
-        useEditorStore();
+    const { objects, selectedId, selectObject, updateObject, addObject } = useEditorStore();
 
     const [selectedMesh, setSelectedMesh] = useState<THREE.Object3D | null>(null);
     const [transformMode, setTransformMode] = useState<TransformMode>("translate");
@@ -213,15 +211,11 @@ const VcmEditor = () => {
                                                     setDragStartTransform(null);
 
                                                     if (selectedMesh && selectedId) {
-                                                        updatePosition(
-                                                            selectedId,
-                                                            selectedMesh.position.toArray() as Vec3,
-                                                        );
-                                                        updateRotation(
-                                                            selectedId,
-                                                            selectedMesh.rotation.toArray() as Vec3,
-                                                        );
-                                                        updateScale(selectedId, selectedMesh.scale.toArray() as Vec3);
+                                                        updateObject(selectedId, {
+                                                            position: selectedMesh.position.toArray() as Vec3,
+                                                            rotation: selectedMesh.rotation.toArray() as Vec3,
+                                                            scale: selectedMesh.scale.toArray() as Vec3,
+                                                        });
                                                     }
                                                 }}
                                             />
@@ -267,17 +261,7 @@ const VcmEditor = () => {
                                                 { id: "search", icon: SearchIcon, label: "Поиск", align: "right" },
                                             ]}
                                         />
-
-                                        <div className="sidebar__elements-list">
-                                            <ElementItem
-                                                name="Cube_01"
-                                                iconSrc={BoxIcon}
-                                                iconColor="#ef4444"
-                                                isSelected
-                                            />
-                                            <ElementItem name="Cube_02" iconSrc={BoxIcon} iconColor="#f59e0b" />
-                                            <ElementItem name="Cube_03" iconSrc={BoxIcon} iconColor="#3b82f6" />
-                                        </div>
+                                        <ElementsList />
                                     </SidebarSection>
                                 </Sidebar>
                             </Panel>

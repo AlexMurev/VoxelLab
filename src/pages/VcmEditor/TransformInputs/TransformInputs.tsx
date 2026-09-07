@@ -5,7 +5,6 @@ import { useEditorStore } from "../editorStore";
 import Vector3Input from "@/components/Vector3Input/Vector3Input";
 import type { Vec3 } from "@/types/vectors";
 
-// Выносим инпуты в отдельный компонент, чтобы они могли обновляться независимо от Canvas
 const TransformInputs = ({
     selectedMesh,
     selectedId,
@@ -13,7 +12,7 @@ const TransformInputs = ({
     selectedMesh: THREE.Object3D | null;
     selectedId: string | null;
 }) => {
-    const { updatePosition, updateRotation, updateScale } = useEditorStore();
+    const { updateObject } = useEditorStore();
 
     const [, forceRender] = useState(0);
 
@@ -23,7 +22,6 @@ const TransformInputs = ({
         return () => window.removeEventListener("transform-change", handleUpdate);
     }, []);
 
-    // Подготавливаем значения вращения в градусах для отображения в UI
     const rotationInDegrees: Vec3 = selectedMesh
         ? [
               THREE.MathUtils.radToDeg(selectedMesh.rotation.x),
@@ -41,9 +39,7 @@ const TransformInputs = ({
                 onChange={(value) => {
                     if (selectedMesh && selectedId) {
                         selectedMesh.position.set(value[0], value[1], value[2]);
-
-                        updatePosition(selectedId, value);
-
+                        updateObject(selectedId, { position: value });
                         window.dispatchEvent(new CustomEvent("transform-change"));
                     }
                 }}
@@ -55,7 +51,7 @@ const TransformInputs = ({
                 onChange={(value) => {
                     if (selectedMesh && selectedId) {
                         selectedMesh.scale.set(value[0], value[1], value[2]);
-                        updateScale(selectedId, value);
+                        updateObject(selectedId, { scale: value });
                         window.dispatchEvent(new CustomEvent("transform-change"));
                     }
                 }}
@@ -71,7 +67,7 @@ const TransformInputs = ({
                         const radZ = THREE.MathUtils.degToRad(value[2]);
 
                         selectedMesh.rotation.set(radX, radY, radZ);
-                        updateRotation(selectedId, [radX, radY, radZ]);
+                        updateObject(selectedId, { rotation: [radX, radY, radZ] });
                         window.dispatchEvent(new CustomEvent("transform-change"));
                     }
                 }}

@@ -32,34 +32,25 @@
     grid-area: status;
 }
 
-/* Список элементов сцены */
-.sidebar__elements-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 6px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
 
 /* Скроллбары */
-.sidebar__section-content::-webkit-scrollbar,
-.sidebar__elements-list::-webkit-scrollbar {
+.transform-inputs::-webkit-scrollbar,
+.elements-list::-webkit-scrollbar {
     width: 4px;
 }
 
-.sidebar__section-content::-webkit-scrollbar-track,
-.sidebar__elements-list::-webkit-scrollbar-track {
+.transform-inputs::-webkit-scrollbar-track,
+.elements-list::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.sidebar__section-content::-webkit-scrollbar-thumb,
-.sidebar__elements-list::-webkit-scrollbar-thumb {
+.transform-inputs::-webkit-scrollbar-thumb,
+.elements-list::-webkit-scrollbar-thumb {
     background: var(--border-color);
     border-radius: 4px;
 }
 
-.sidebar__section-content::-webkit-scrollbar-thumb:hover,
-.sidebar__elements-list::-webkit-scrollbar-thumb:hover {
+.transform-inputs::-webkit-scrollbar-thumb:hover,
+.elements-list::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
 }
