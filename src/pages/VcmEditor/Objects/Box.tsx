@@ -2,15 +2,15 @@ import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { forwardRef } from "react";
 import type { Vec3 } from "@/types/vectors";
+import type { ThreeEvent } from "@react-three/fiber";
 
 interface BoxProps {
     position: Vec3;
     rotation: Vec3;
     scale: Vec3;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onClick: (e: any) => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onDoubleClick: (e: any) => void;
+    name: string;
+    onClick: (e: ThreeEvent<MouseEvent>) => void;
+    onDoubleClick: (e: ThreeEvent<MouseEvent>) => void;
 }
 
 const Box = forwardRef<THREE.Mesh, BoxProps>((props, ref) => {
@@ -35,6 +35,7 @@ const Box = forwardRef<THREE.Mesh, BoxProps>((props, ref) => {
     return (
         <mesh
             ref={ref}
+            name={props.name}
             position={props.position}
             rotation={props.rotation}
             scale={props.scale}

@@ -1,13 +1,8 @@
 import "./VcmEditor.css";
 import { Canvas } from "@react-three/fiber";
-import { Edges, GizmoHelper, GizmoViewport, OrbitControls, TransformControls } from "@react-three/drei";
-import * as THREE from "three";
 import { useState } from "react";
 import { Toolbar } from "./Toolbar/Toolbar";
-import { useCssVariable } from "@/hooks/useCssVariable";
-import FpsTracker from "@/utils/FpsTracker";
-import Editor2DText from "./Objects/Editor2DText";
-import Box from "./Objects/Box";
+
 import StatusBar from "./StatusBar/StatusBar";
 import Sidebar from "./Sidebar/Sidebar";
 import { Panel, Group } from "react-resizable-panels";
@@ -16,7 +11,7 @@ import { useEditorStore } from "./editorStore";
 import SidebarSection from "./Sidebar/SidebarSection/SidebarSection";
 import type { Vec3 } from "@/types/vectors";
 import TransformInputs from "./TransformInputs/TransformInputs";
-import { ElementsList } from "./ElemntList/ElementsList";
+import { ElementsList } from "./ElementsList/ElementsList";
 
 import TranslateIcon from "@/assets/translate.svg";
 import RotateIcon from "@/assets/rotate.svg";
@@ -25,30 +20,19 @@ import CenterIcon from "@/assets/center.svg";
 import AddIcon from "@/assets/add.svg";
 import AddGroupIcon from "@/assets/add-group.svg";
 import SearchIcon from "@/assets/search.svg";
-import { useTransformSnap } from "./useTransformSnap";
 import { useHotkey } from "@/hooks/useHotkey";
+import { EditorScene } from "./EditorScene/EditorScene";
 
 type TransformMode = "translate" | "rotate" | "scale";
 
 const VcmEditor = () => {
-    const { objects, selectedId, selectObject, updateObject, addObject } = useEditorStore();
+    const { selectedId, selectObject, addObject } = useEditorStore();
 
-    const [selectedMesh, setSelectedMesh] = useState<THREE.Object3D | null>(null);
     const [transformMode, setTransformMode] = useState<TransformMode>("translate");
     const [targetPosition, setTargetPosition] = useState<Vec3>([0, 0, 0]);
     const [isDraggingBar, setIsDraggingBar] = useState(false);
 
-    const [dragStartTransform, setDragStartTransform] = useState<{
-        position: Vec3;
-        rotation: Vec3;
-        scale: Vec3;
-    } | null>(null);
-
-    const colorGrid = useCssVariable("--border-color", "#880000");
-    const colorPhantomEdges = useCssVariable("--accent-primary", "#0000ff");
-
     const [fps, setFps] = useState(0);
-    const activeTranslateSnap = useTransformSnap(1);
 
     useHotkey({
         KeyV: () => setTransformMode("translate"),
@@ -58,8 +42,6 @@ const VcmEditor = () => {
 
     const handleCanvasMissed = () => {
         selectObject(null);
-        setSelectedMesh(null);
-        setDragStartTransform(null);
     };
 
     return (
@@ -114,97 +96,13 @@ const VcmEditor = () => {
                             <Panel minSize={50}>
                                 <div className="vcm-editor__canvas">
                                     <Canvas camera={{ position: [8, 8, 16] }} onPointerMissed={handleCanvasMissed}>
-                                        <GizmoHelper alignment="top-right" margin={[65, 65]}>
-                                            <GizmoViewport scale={30} />
-                                        </GizmoHelper>
-                                        <axesHelper args={[16]} position={[-8, -0.999, -8]} />
-                                        <gridHelper args={[16, 16, colorGrid, colorGrid]} position={[0, -1, 0]} />
-                                        <gridHelper args={[48, 3, colorGrid, colorGrid]} position={[0, -1, 0]} />
-                                        <OrbitControls
-                                            enabled={!isDraggingBar}
-                                            enableDamping={false}
-                                            makeDefault
-                                            enableZoom={true}
-                                            enablePan={true}
-                                            enableRotate={true}
-                                            minAzimuthAngle={-Infinity}
-                                            maxAzimuthAngle={Infinity}
-                                            minPolarAngle={0}
-                                            maxDistance={240}
-                                            minDistance={0.01}
-                                            maxPolarAngle={Math.PI}
-                                            target={targetPosition}
+                                        <EditorScene
+                                            isDraggingBar={isDraggingBar}
+                                            targetPosition={targetPosition}
+                                            setTargetPosition={setTargetPosition}
+                                            transformMode={transformMode}
+                                            setFps={setFps}
                                         />
-
-                                        {dragStartTransform && (
-                                            <mesh
-                                                position={dragStartTransform.position}
-                                                rotation={dragStartTransform.rotation}
-                                                scale={dragStartTransform.scale}>
-                                                <boxGeometry args={[1, 1, 1]} />
-                                                <meshBasicMaterial visible={false} />
-                                                <Edges
-                                                    toneMapped={false}
-                                                    color={colorPhantomEdges}
-                                                    linewidth={2}
-                                                    threshold={1}
-                                                />
-                                            </mesh>
-                                        )}
-
-                                        {objects.map((obj) => (
-                                            <Box
-                                                key={obj.id}
-                                                position={obj.position}
-                                                rotation={obj.rotation}
-                                                scale={obj.scale}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    selectObject(obj.id);
-                                                    setSelectedMesh(e.object);
-                                                }}
-                                                onDoubleClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setTargetPosition(obj.position);
-                                                }}
-                                            />
-                                        ))}
-
-                                        {selectedMesh && (
-                                            <TransformControls
-                                                object={selectedMesh}
-                                                mode={transformMode}
-                                                translationSnap={activeTranslateSnap}
-                                                scaleSnap={activeTranslateSnap}
-                                                rotationSnap={22.5 * (Math.PI / 180)}
-                                                onObjectChange={() => {
-                                                    window.dispatchEvent(new CustomEvent("transform-change"));
-                                                }}
-                                                onMouseDown={() => {
-                                                    if (selectedMesh) {
-                                                        setDragStartTransform({
-                                                            position: selectedMesh.position.toArray() as Vec3,
-                                                            rotation: selectedMesh.rotation.toArray() as Vec3,
-                                                            scale: selectedMesh.scale.toArray() as Vec3,
-                                                        });
-                                                    }
-                                                }}
-                                                onMouseUp={() => {
-                                                    setDragStartTransform(null);
-
-                                                    if (selectedMesh && selectedId) {
-                                                        updateObject(selectedId, {
-                                                            position: selectedMesh.position.toArray() as Vec3,
-                                                            rotation: selectedMesh.rotation.toArray() as Vec3,
-                                                            scale: selectedMesh.scale.toArray() as Vec3,
-                                                        });
-                                                    }
-                                                }}
-                                            />
-                                        )}
-
-                                        <Editor2DText color={colorGrid} />
-                                        <FpsTracker onFpsUpdate={setFps} />
                                     </Canvas>
                                 </div>
                             </Panel>
@@ -214,7 +112,7 @@ const VcmEditor = () => {
                             <Panel defaultSize={330} minSize={130} groupResizeBehavior="preserve-pixel-size">
                                 <Sidebar>
                                     <SidebarSection minSize={250} defaultSize={250} title="Трансформ">
-                                        <TransformInputs selectedMesh={selectedMesh} selectedId={selectedId} />
+                                        <TransformInputs />
                                     </SidebarSection>
 
                                     <PanelSeparator type="horizontal" />
